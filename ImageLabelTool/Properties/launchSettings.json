@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "ImageLabelTool": {
+      "commandName": "Project",
+      "workingDirectory": "$(SolutionDir)build",
+      "nativeDebugging": true
+    }
+  }
+}

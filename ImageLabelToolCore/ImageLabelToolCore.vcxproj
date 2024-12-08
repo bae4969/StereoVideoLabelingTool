@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{de422d70-c2ec-4f40-b75e-c9f0f8b3f152}</ProjectGuid>
+    <RootNamespace>ImageLabelToolCore</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>..\..\..\..\..\..\..\..\exlib\x64\include;..\..\..\..\..\..\..\..\exlib\x64\include\tinyxml2;..\..\..\..\..\..\..\..\exlib\x64\include\eigen3;..\..\..\..\..\..\..\..\exlib\x64\include\flann;..\..\..\..\..\..\..\..\exlib\x64\include\ITK-5.3;..\..\..\..\..\..\..\..\exlib\x64\include\opencv4100;..\..\..\..\..\..\..\..\exlib\x64\include\pcl-1.13;..\..\..\..\..\..\..\..\exlib\x64\include\vtk-9.3;..\..\..\..\..\..\..\..\exlib\x64\include\zmq434;..\..\..\..\..\..\..\..\exlib\cuda\include;..\..\..\..\..\..\..\..\exlib\TV\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\..\..\..\..\exlib\x64\lib;..\..\..\..\..\..\..\..\exlib\cuda\lib;..\..\..\..\..\..\..\..\exlib\TV\lib;$(LibraryPath)</LibraryPath>
+    <TargetName>$(ProjectName)_d</TargetName>
+    <OutDir>$(SolutionDir)build\bin\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>..\..\..\..\..\..\..\..\exlib\x64\include;..\..\..\..\..\..\..\..\exlib\x64\include\tinyxml2;..\..\..\..\..\..\..\..\exlib\x64\include\eigen3;..\..\..\..\..\..\..\..\exlib\x64\include\flann;..\..\..\..\..\..\..\..\exlib\x64\include\ITK-5.3;..\..\..\..\..\..\..\..\exlib\x64\include\opencv4100;..\..\..\..\..\..\..\..\exlib\x64\include\pcl-1.13;..\..\..\..\..\..\..\..\exlib\x64\include\vtk-9.3;..\..\..\..\..\..\..\..\exlib\x64\include\zmq434;..\..\..\..\..\..\..\..\exlib\cuda\include;..\..\..\..\..\..\..\..\exlib\TV\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\..\..\..\..\exlib\x64\lib;..\..\..\..\..\..\..\..\exlib\cuda\lib;..\..\..\..\..\..\..\..\exlib\TV\lib;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)build\bin\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>IMAGELABELTOOLCORE_EXPORTS;MY_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <OpenMPSupport>true</OpenMPSupport>
+      <CompileAsWinRT>
+      </CompileAsWinRT>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>cublas.lib;cublasLt.lib;cuda.lib;cudadevrt.lib;cudart.lib;cudart_static.lib;cudnn.lib;cudnn64_9.lib;cudnn_adv.lib;cudnn_adv64_9.lib;cudnn_cnn.lib;cudnn_cnn64_9.lib;cudnn_engines_precompiled64_9.lib;cudnn_engines_runtime_compiled64_9.lib;cudnn_graph.lib;cudnn_graph64_9.lib;cudnn_heuristic.lib;cudnn_heuristic64_9.lib;cudnn_ops.lib;cudnn_ops64_9.lib;cufft.lib;cufftw.lib;cufilt.lib;cusolver.lib;cusolverMg.lib;cusparse.lib;nppc.lib;nppial.lib;nppicc.lib;nppidei.lib;nppif.lib;nppig.lib;nppim.lib;nppist.lib;nppisu.lib;nppitc.lib;npps.lib;nvblas.lib;nvfatbin.lib;nvfatbin_static.lib;nvJitLink.lib;nvJitLink_static.lib;nvjpeg.lib;nvml.lib;nvptxcompiler_static.lib;nvrtc-builtins_static.lib;nvrtc.lib;nvrtc_static.lib;nvvm.lib;OpenCL.lib;tinyxml2.lib;flann.lib;flann_cpp_s.lib;flann_cuda_s.lib;flann_s.lib;hdf5_hl_cpp-static.lib;itkAdaptiveDenoising-5.3.lib;itkAnalyzeObjectLabelMap-5.3.lib;ITKBiasCorrection-5.3.lib;ITKColormap-5.3.lib;ITKCommon-5.3.lib;ITKConvolution-5.3.lib;itkCudaCommon-5.3.lib;ITKDeformableMesh-5.3.lib;ITKDenoising-5.3.lib;ITKDICOMParser-5.3.lib;ITKDiffusionTensorImage-5.3.lib;itkdouble-conversion-5.3.lib;ITKEXPAT-5.3.lib;ITKFastMarching-5.3.lib;ITKFFT-5.3.lib;itkgdcmcharls-5.3.lib;itkgdcmCommon-5.3.lib;itkgdcmDICT-5.3.lib;itkgdcmDSED-5.3.lib;itkgdcmIOD-5.3.lib;itkgdcmjpeg12-5.3.lib;itkgdcmjpeg16-5.3.lib;itkgdcmjpeg8-5.3.lib;itkgdcmMEXD-5.3.lib;itkgdcmMSFF-5.3.lib;itkgdcmopenjp2-5.3.lib;itkgdcmsocketxx-5.3.lib;ITKgiftiio-5.3.lib;itkGrowCut-5.3.lib;itkhdf5-static-5.3.lib;itkhdf5_cpp-static-5.3.lib;itkhdf5_hl-static-5.3.lib;ITKImageFeature-5.3.lib;ITKImageIntensity-5.3.lib;ITKIOBioRad-5.3.lib;ITKIOBMP-5.3.lib;ITKIOBruker-5.3.lib;ITKIOCSV-5.3.lib;ITKIOGDCM-5.3.lib;ITKIOGE-5.3.lib;ITKIOGIPL-5.3.lib;ITKIOHDF5-5.3.lib;ITKIOImageBase-5.3.lib;ITKIOIPL-5.3.lib;ITKIOJPEG-5.3.lib;ITKIOJPEG2000-5.3.lib;ITKIOLSM-5.3.lib;ITKIOMeshBase-5.3.lib;ITKIOMeshBYU-5.3.lib;ITKIOMeshFreeSurfer-5.3.lib;ITKIOMeshGifti-5.3.lib;ITKIOMeshOBJ-5.3.lib;ITKIOMeshOFF-5.3.lib;ITKIOMeshVTK-5.3.lib;ITKIOMeta-5.3.lib;ITKIOMINC-5.3.lib;ITKIOMRC-5.3.lib;ITKIONIFTI-5.3.lib;ITKIONRRD-5.3.lib;ITKIOPNG-5.3.lib;ITKIOSiemens-5.3.lib;ITKIOSpatialObjects-5.3.lib;ITKIOStimulate-5.3.lib;ITKIOTIFF-5.3.lib;ITKIOTransformBase-5.3.lib;ITKIOTransformHDF5-5.3.lib;ITKIOTransformInsightLegacy-5.3.lib;ITKIOTransformMatlab-5.3.lib;ITKIOVTK-5.3.lib;ITKIOXML-5.3.lib;itkjpeg-5.3.lib;ITKKLMRegionGrowing-5.3.lib;ITKLabelMap-5.3.lib;itklbfgs-5.3.lib;itklpsolve55-5.3.lib;ITKMarkovRandomFieldsClassifiers-5.3.lib;ITKMathematicalMorphology-5.3.lib;ITKMesh-5.3.lib;ITKMetaIO-5.3.lib;itkminc2-5.3.lib;itkNetlibSlatec-5.3.lib;ITKniftiio-5.3.lib;ITKNrrdIO-5.3.lib;itkopenjpeg-5.3.lib;ITKOptimizers-5.3.lib;ITKOptimizersv4-5.3.lib;ITKPath-5.3.lib;ITKPDEDeformableRegistration-5.3.lib;itkpng-5.3.lib;ITKPolynomials-5.3.lib;ITKQuadEdgeMesh-5.3.lib;ITKQuadEdgeMeshFiltering-5.3.lib;ITKRegionGrowing-5.3.lib;ITKRegistrationMethodsv4-5.3.lib;itkRTK-5.3.lib;ITKSmoothing-5.3.lib;ITKSpatialObjects-5.3.lib;ITKStatistics-5.3.lib;itksys-5.3.lib;ITKTestKernel-5.3.lib;itktestlib-5.3.lib;itktiff-5.3.lib;ITKTransform-5.3.lib;ITKTransformFactory-5.3.lib;itkv3p_netlib-5.3.lib;itkvcl-5.3.lib;ITKVideoCore-5.3.lib;ITKVideoIO-5.3.lib;itkvnl-5.3.lib;ITKVNLInstantiation-5.3.lib;itkvnl_algo-5.3.lib;ITKVTK-5.3.lib;ITKWatersheds-5.3.lib;itkzlib-5.3.lib;ITKznz-5.3.lib;libzmq-v143-434.lib;lpsolve55.lib;opencv_img_hash4100.lib;opencv_world4100.lib;pcl_common.lib;pcl_cuda_features.lib;pcl_cuda_sample_consensus.lib;pcl_cuda_segmentation.lib;pcl_features.lib;pcl_filters.lib;pcl_io.lib;pcl_io_ply.lib;pcl_kdtree.lib;pcl_keypoints.lib;pcl_ml.lib;pcl_octree.lib;pcl_outofcore.lib;pcl_people.lib;pcl_recognition.lib;pcl_registration.lib;pcl_sample_consensus.lib;pcl_search.lib;pcl_segmentation.lib;pcl_stereo.lib;pcl_surface.lib;pcl_tracking.lib;pcl_visualization.lib;vtkcgns-9.3.lib;vtkChartsCore-9.3.lib;vtkCommonColor-9.3.lib;vtkCommonComputationalGeometry-9.3.lib;vtkCommonCore-9.3.lib;vtkCommonDataModel-9.3.lib;vtkCommonExecutionModel-9.3.lib;vtkCommonMath-9.3.lib;vtkCommonMisc-9.3.lib;vtkCommonSystem-9.3.lib;vtkCommonTransforms-9.3.lib;vtkDICOMParser-9.3.lib;vtkDomainsChemistry-9.3.lib;vtkDomainsChemistryOpenGL2-9.3.lib;vtkdoubleconversion-9.3.lib;vtkexodusII-9.3.lib;vtkexpat-9.3.lib;vtkFiltersAMR-9.3.lib;vtkFiltersCellGrid-9.3.lib;vtkFiltersCore-9.3.lib;vtkFiltersExtraction-9.3.lib;vtkFiltersFlowPaths-9.3.lib;vtkFiltersGeneral-9.3.lib;vtkFiltersGeneric-9.3.lib;vtkFiltersGeometry-9.3.lib;vtkFiltersGeometryPreview-9.3.lib;vtkFiltersHybrid-9.3.lib;vtkFiltersHyperTree-9.3.lib;vtkFiltersImaging-9.3.lib;vtkFiltersModeling-9.3.lib;vtkFiltersParallel-9.3.lib;vtkFiltersParallelImaging-9.3.lib;vtkFiltersPoints-9.3.lib;vtkFiltersProgrammable-9.3.lib;vtkFiltersSelection-9.3.lib;vtkFiltersSMP-9.3.lib;vtkFiltersSources-9.3.lib;vtkFiltersStatistics-9.3.lib;vtkFiltersTensor-9.3.lib;vtkFiltersTexture-9.3.lib;vtkFiltersTopology-9.3.lib;vtkFiltersVerdict-9.3.lib;vtkfmt-9.3.lib;vtkfreetype-9.3.lib;vtkGeovisCore-9.3.lib;vtkgl2ps-9.3.lib;vtkglew-9.3.lib;vtkhdf5-9.3.lib;vtkhdf5_hl-9.3.lib;vtkImagingColor-9.3.lib;vtkImagingCore-9.3.lib;vtkImagingFourier-9.3.lib;vtkImagingGeneral-9.3.lib;vtkImagingHybrid-9.3.lib;vtkImagingMath-9.3.lib;vtkImagingMorphological-9.3.lib;vtkImagingSources-9.3.lib;vtkImagingStatistics-9.3.lib;vtkImagingStencil-9.3.lib;vtkInfovisCore-9.3.lib;vtkInfovisLayout-9.3.lib;vtkInteractionImage-9.3.lib;vtkInteractionStyle-9.3.lib;vtkInteractionWidgets-9.3.lib;vtkIOAMR-9.3.lib;vtkIOAsynchronous-9.3.lib;vtkIOCellGrid-9.3.lib;vtkIOCesium3DTiles-9.3.lib;vtkIOCGNSReader-9.3.lib;vtkIOChemistry-9.3.lib;vtkIOCityGML-9.3.lib;vtkIOCONVERGECFD-9.3.lib;vtkIOCore-9.3.lib;vtkIOEnSight-9.3.lib;vtkIOExodus-9.3.lib;vtkIOExport-9.3.lib;vtkIOExportGL2PS-9.3.lib;vtkIOExportPDF-9.3.lib;vtkIOFLUENTCFF-9.3.lib;vtkIOGeometry-9.3.lib;vtkIOHDF-9.3.lib;vtkIOImage-9.3.lib;vtkIOImport-9.3.lib;vtkIOInfovis-9.3.lib;vtkIOIOSS-9.3.lib;vtkIOLegacy-9.3.lib;vtkIOLSDyna-9.3.lib;vtkIOMINC-9.3.lib;vtkIOMotionFX-9.3.lib;vtkIOMovie-9.3.lib;vtkIONetCDF-9.3.lib;vtkIOOggTheora-9.3.lib;vtkIOParallel-9.3.lib;vtkIOParallelXML-9.3.lib;vtkIOPLY-9.3.lib;vtkIOSegY-9.3.lib;vtkIOSQL-9.3.lib;vtkioss-9.3.lib;vtkIOTecplotTable-9.3.lib;vtkIOVeraOut-9.3.lib;vtkIOVideo-9.3.lib;vtkIOXML-9.3.lib;vtkIOXMLParser-9.3.lib;vtkjpeg-9.3.lib;vtkjsoncpp-9.3.lib;vtkkissfft-9.3.lib;vtklibharu-9.3.lib;vtklibproj-9.3.lib;vtklibxml2-9.3.lib;vtkloguru-9.3.lib;vtklz4-9.3.lib;vtklzma-9.3.lib;vtkmetaio-9.3.lib;vtknetcdf-9.3.lib;vtkogg-9.3.lib;vtkParallelCore-9.3.lib;vtkParallelDIY-9.3.lib;vtkpng-9.3.lib;vtkpugixml-9.3.lib;vtkRenderingAnnotation-9.3.lib;vtkRenderingCellGrid-9.3.lib;vtkRenderingContext2D-9.3.lib;vtkRenderingContextOpenGL2-9.3.lib;vtkRenderingCore-9.3.lib;vtkRenderingFreeType-9.3.lib;vtkRenderingGL2PSOpenGL2-9.3.lib;vtkRenderingHyperTreeGrid-9.3.lib;vtkRenderingImage-9.3.lib;vtkRenderingLabel-9.3.lib;vtkRenderingLICOpenGL2-9.3.lib;vtkRenderingLOD-9.3.lib;vtkRenderingOpenGL2-9.3.lib;vtkRenderingSceneGraph-9.3.lib;vtkRenderingUI-9.3.lib;vtkRenderingVolume-9.3.lib;vtkRenderingVolumeOpenGL2-9.3.lib;vtkRenderingVtkJS-9.3.lib;vtksqlite-9.3.lib;vtksys-9.3.lib;vtkTestingRendering-9.3.lib;vtktheora-9.3.lib;vtktiff-9.3.lib;vtkverdict-9.3.lib;vtkViewsContext2D-9.3.lib;vtkViewsCore-9.3.lib;vtkViewsInfovis-9.3.lib;vtkWrappingTools-9.3.lib;vtkzlib-9.3.lib;TVCommon.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <CudaCompile>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+      <AdditionalOptions>-allow-unsupported-compiler %(AdditionalOptions)</AdditionalOptions>
+      <CodeGeneration>%(CodeGeneration)</CodeGeneration>
+    </CudaCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>IMAGELABELTOOLCORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <OpenMPSupport>true</OpenMPSupport>
+      <CompileAsWinRT>
+      </CompileAsWinRT>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>cublas.lib;cublasLt.lib;cuda.lib;cudadevrt.lib;cudart.lib;cudart_static.lib;cudnn.lib;cudnn64_9.lib;cudnn_adv.lib;cudnn_adv64_9.lib;cudnn_cnn.lib;cudnn_cnn64_9.lib;cudnn_engines_precompiled64_9.lib;cudnn_engines_runtime_compiled64_9.lib;cudnn_graph.lib;cudnn_graph64_9.lib;cudnn_heuristic.lib;cudnn_heuristic64_9.lib;cudnn_ops.lib;cudnn_ops64_9.lib;cufft.lib;cufftw.lib;cufilt.lib;cusolver.lib;cusolverMg.lib;cusparse.lib;nppc.lib;nppial.lib;nppicc.lib;nppidei.lib;nppif.lib;nppig.lib;nppim.lib;nppist.lib;nppisu.lib;nppitc.lib;npps.lib;nvblas.lib;nvfatbin.lib;nvfatbin_static.lib;nvJitLink.lib;nvJitLink_static.lib;nvjpeg.lib;nvml.lib;nvptxcompiler_static.lib;nvrtc-builtins_static.lib;nvrtc.lib;nvrtc_static.lib;nvvm.lib;OpenCL.lib;tinyxml2.lib;flann.lib;flann_cpp_s.lib;flann_cuda_s.lib;flann_s.lib;hdf5_hl_cpp-static.lib;itkAdaptiveDenoising-5.3.lib;itkAnalyzeObjectLabelMap-5.3.lib;ITKBiasCorrection-5.3.lib;ITKColormap-5.3.lib;ITKCommon-5.3.lib;ITKConvolution-5.3.lib;itkCudaCommon-5.3.lib;ITKDeformableMesh-5.3.lib;ITKDenoising-5.3.lib;ITKDICOMParser-5.3.lib;ITKDiffusionTensorImage-5.3.lib;itkdouble-conversion-5.3.lib;ITKEXPAT-5.3.lib;ITKFastMarching-5.3.lib;ITKFFT-5.3.lib;itkgdcmcharls-5.3.lib;itkgdcmCommon-5.3.lib;itkgdcmDICT-5.3.lib;itkgdcmDSED-5.3.lib;itkgdcmIOD-5.3.lib;itkgdcmjpeg12-5.3.lib;itkgdcmjpeg16-5.3.lib;itkgdcmjpeg8-5.3.lib;itkgdcmMEXD-5.3.lib;itkgdcmMSFF-5.3.lib;itkgdcmopenjp2-5.3.lib;itkgdcmsocketxx-5.3.lib;ITKgiftiio-5.3.lib;itkGrowCut-5.3.lib;itkhdf5-static-5.3.lib;itkhdf5_cpp-static-5.3.lib;itkhdf5_hl-static-5.3.lib;ITKImageFeature-5.3.lib;ITKImageIntensity-5.3.lib;ITKIOBioRad-5.3.lib;ITKIOBMP-5.3.lib;ITKIOBruker-5.3.lib;ITKIOCSV-5.3.lib;ITKIOGDCM-5.3.lib;ITKIOGE-5.3.lib;ITKIOGIPL-5.3.lib;ITKIOHDF5-5.3.lib;ITKIOImageBase-5.3.lib;ITKIOIPL-5.3.lib;ITKIOJPEG-5.3.lib;ITKIOJPEG2000-5.3.lib;ITKIOLSM-5.3.lib;ITKIOMeshBase-5.3.lib;ITKIOMeshBYU-5.3.lib;ITKIOMeshFreeSurfer-5.3.lib;ITKIOMeshGifti-5.3.lib;ITKIOMeshOBJ-5.3.lib;ITKIOMeshOFF-5.3.lib;ITKIOMeshVTK-5.3.lib;ITKIOMeta-5.3.lib;ITKIOMINC-5.3.lib;ITKIOMRC-5.3.lib;ITKIONIFTI-5.3.lib;ITKIONRRD-5.3.lib;ITKIOPNG-5.3.lib;ITKIOSiemens-5.3.lib;ITKIOSpatialObjects-5.3.lib;ITKIOStimulate-5.3.lib;ITKIOTIFF-5.3.lib;ITKIOTransformBase-5.3.lib;ITKIOTransformHDF5-5.3.lib;ITKIOTransformInsightLegacy-5.3.lib;ITKIOTransformMatlab-5.3.lib;ITKIOVTK-5.3.lib;ITKIOXML-5.3.lib;itkjpeg-5.3.lib;ITKKLMRegionGrowing-5.3.lib;ITKLabelMap-5.3.lib;itklbfgs-5.3.lib;itklpsolve55-5.3.lib;ITKMarkovRandomFieldsClassifiers-5.3.lib;ITKMathematicalMorphology-5.3.lib;ITKMesh-5.3.lib;ITKMetaIO-5.3.lib;itkminc2-5.3.lib;itkNetlibSlatec-5.3.lib;ITKniftiio-5.3.lib;ITKNrrdIO-5.3.lib;itkopenjpeg-5.3.lib;ITKOptimizers-5.3.lib;ITKOptimizersv4-5.3.lib;ITKPath-5.3.lib;ITKPDEDeformableRegistration-5.3.lib;itkpng-5.3.lib;ITKPolynomials-5.3.lib;ITKQuadEdgeMesh-5.3.lib;ITKQuadEdgeMeshFiltering-5.3.lib;ITKRegionGrowing-5.3.lib;ITKRegistrationMethodsv4-5.3.lib;itkRTK-5.3.lib;ITKSmoothing-5.3.lib;ITKSpatialObjects-5.3.lib;ITKStatistics-5.3.lib;itksys-5.3.lib;ITKTestKernel-5.3.lib;itktestlib-5.3.lib;itktiff-5.3.lib;ITKTransform-5.3.lib;ITKTransformFactory-5.3.lib;itkv3p_netlib-5.3.lib;itkvcl-5.3.lib;ITKVideoCore-5.3.lib;ITKVideoIO-5.3.lib;itkvnl-5.3.lib;ITKVNLInstantiation-5.3.lib;itkvnl_algo-5.3.lib;ITKVTK-5.3.lib;ITKWatersheds-5.3.lib;itkzlib-5.3.lib;ITKznz-5.3.lib;libzmq-v143-434.lib;lpsolve55.lib;opencv_img_hash4100.lib;opencv_world4100.lib;pcl_common.lib;pcl_cuda_features.lib;pcl_cuda_sample_consensus.lib;pcl_cuda_segmentation.lib;pcl_features.lib;pcl_filters.lib;pcl_io.lib;pcl_io_ply.lib;pcl_kdtree.lib;pcl_keypoints.lib;pcl_ml.lib;pcl_octree.lib;pcl_outofcore.lib;pcl_people.lib;pcl_recognition.lib;pcl_registration.lib;pcl_sample_consensus.lib;pcl_search.lib;pcl_segmentation.lib;pcl_stereo.lib;pcl_surface.lib;pcl_tracking.lib;pcl_visualization.lib;vtkcgns-9.3.lib;vtkChartsCore-9.3.lib;vtkCommonColor-9.3.lib;vtkCommonComputationalGeometry-9.3.lib;vtkCommonCore-9.3.lib;vtkCommonDataModel-9.3.lib;vtkCommonExecutionModel-9.3.lib;vtkCommonMath-9.3.lib;vtkCommonMisc-9.3.lib;vtkCommonSystem-9.3.lib;vtkCommonTransforms-9.3.lib;vtkDICOMParser-9.3.lib;vtkDomainsChemistry-9.3.lib;vtkDomainsChemistryOpenGL2-9.3.lib;vtkdoubleconversion-9.3.lib;vtkexodusII-9.3.lib;vtkexpat-9.3.lib;vtkFiltersAMR-9.3.lib;vtkFiltersCellGrid-9.3.lib;vtkFiltersCore-9.3.lib;vtkFiltersExtraction-9.3.lib;vtkFiltersFlowPaths-9.3.lib;vtkFiltersGeneral-9.3.lib;vtkFiltersGeneric-9.3.lib;vtkFiltersGeometry-9.3.lib;vtkFiltersGeometryPreview-9.3.lib;vtkFiltersHybrid-9.3.lib;vtkFiltersHyperTree-9.3.lib;vtkFiltersImaging-9.3.lib;vtkFiltersModeling-9.3.lib;vtkFiltersParallel-9.3.lib;vtkFiltersParallelImaging-9.3.lib;vtkFiltersPoints-9.3.lib;vtkFiltersProgrammable-9.3.lib;vtkFiltersSelection-9.3.lib;vtkFiltersSMP-9.3.lib;vtkFiltersSources-9.3.lib;vtkFiltersStatistics-9.3.lib;vtkFiltersTensor-9.3.lib;vtkFiltersTexture-9.3.lib;vtkFiltersTopology-9.3.lib;vtkFiltersVerdict-9.3.lib;vtkfmt-9.3.lib;vtkfreetype-9.3.lib;vtkGeovisCore-9.3.lib;vtkgl2ps-9.3.lib;vtkglew-9.3.lib;vtkhdf5-9.3.lib;vtkhdf5_hl-9.3.lib;vtkImagingColor-9.3.lib;vtkImagingCore-9.3.lib;vtkImagingFourier-9.3.lib;vtkImagingGeneral-9.3.lib;vtkImagingHybrid-9.3.lib;vtkImagingMath-9.3.lib;vtkImagingMorphological-9.3.lib;vtkImagingSources-9.3.lib;vtkImagingStatistics-9.3.lib;vtkImagingStencil-9.3.lib;vtkInfovisCore-9.3.lib;vtkInfovisLayout-9.3.lib;vtkInteractionImage-9.3.lib;vtkInteractionStyle-9.3.lib;vtkInteractionWidgets-9.3.lib;vtkIOAMR-9.3.lib;vtkIOAsynchronous-9.3.lib;vtkIOCellGrid-9.3.lib;vtkIOCesium3DTiles-9.3.lib;vtkIOCGNSReader-9.3.lib;vtkIOChemistry-9.3.lib;vtkIOCityGML-9.3.lib;vtkIOCONVERGECFD-9.3.lib;vtkIOCore-9.3.lib;vtkIOEnSight-9.3.lib;vtkIOExodus-9.3.lib;vtkIOExport-9.3.lib;vtkIOExportGL2PS-9.3.lib;vtkIOExportPDF-9.3.lib;vtkIOFLUENTCFF-9.3.lib;vtkIOGeometry-9.3.lib;vtkIOHDF-9.3.lib;vtkIOImage-9.3.lib;vtkIOImport-9.3.lib;vtkIOInfovis-9.3.lib;vtkIOIOSS-9.3.lib;vtkIOLegacy-9.3.lib;vtkIOLSDyna-9.3.lib;vtkIOMINC-9.3.lib;vtkIOMotionFX-9.3.lib;vtkIOMovie-9.3.lib;vtkIONetCDF-9.3.lib;vtkIOOggTheora-9.3.lib;vtkIOParallel-9.3.lib;vtkIOParallelXML-9.3.lib;vtkIOPLY-9.3.lib;vtkIOSegY-9.3.lib;vtkIOSQL-9.3.lib;vtkioss-9.3.lib;vtkIOTecplotTable-9.3.lib;vtkIOVeraOut-9.3.lib;vtkIOVideo-9.3.lib;vtkIOXML-9.3.lib;vtkIOXMLParser-9.3.lib;vtkjpeg-9.3.lib;vtkjsoncpp-9.3.lib;vtkkissfft-9.3.lib;vtklibharu-9.3.lib;vtklibproj-9.3.lib;vtklibxml2-9.3.lib;vtkloguru-9.3.lib;vtklz4-9.3.lib;vtklzma-9.3.lib;vtkmetaio-9.3.lib;vtknetcdf-9.3.lib;vtkogg-9.3.lib;vtkParallelCore-9.3.lib;vtkParallelDIY-9.3.lib;vtkpng-9.3.lib;vtkpugixml-9.3.lib;vtkRenderingAnnotation-9.3.lib;vtkRenderingCellGrid-9.3.lib;vtkRenderingContext2D-9.3.lib;vtkRenderingContextOpenGL2-9.3.lib;vtkRenderingCore-9.3.lib;vtkRenderingFreeType-9.3.lib;vtkRenderingGL2PSOpenGL2-9.3.lib;vtkRenderingHyperTreeGrid-9.3.lib;vtkRenderingImage-9.3.lib;vtkRenderingLabel-9.3.lib;vtkRenderingLICOpenGL2-9.3.lib;vtkRenderingLOD-9.3.lib;vtkRenderingOpenGL2-9.3.lib;vtkRenderingSceneGraph-9.3.lib;vtkRenderingUI-9.3.lib;vtkRenderingVolume-9.3.lib;vtkRenderingVolumeOpenGL2-9.3.lib;vtkRenderingVtkJS-9.3.lib;vtksqlite-9.3.lib;vtksys-9.3.lib;vtkTestingRendering-9.3.lib;vtktheora-9.3.lib;vtktiff-9.3.lib;vtkverdict-9.3.lib;vtkViewsContext2D-9.3.lib;vtkViewsCore-9.3.lib;vtkViewsInfovis-9.3.lib;vtkWrappingTools-9.3.lib;vtkzlib-9.3.lib;TVCommon.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <CudaCompile>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+      <AdditionalOptions>-allow-unsupported-compiler %(AdditionalOptions)</AdditionalOptions>
+      <CodeGeneration>%(CodeGeneration)</CodeGeneration>
+    </CudaCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="ImageLabelToolCore.h" />
+    <ClInclude Include="Macro.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Switcher.h" />
+    <ClInclude Include="Type.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ImageLabelToolCore.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Switcher.cpp" />
+    <ClCompile Include="Type.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="CudaMacro.cuh">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CudaCompile>
+    <CudaCompile Include="CudaType.cu">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CudaCompile>
+    <CudaCompile Include="CudaType.cuh">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CudaCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 12.6.props" />
+  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 12.6.targets" />
+  </ImportGroup>
+</Project>

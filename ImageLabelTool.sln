@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35514.174 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageLabelTool", "ImageLabelTool\ImageLabelTool.csproj", "{3980DAEE-1B87-4756-BA42-0243F931004D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImageLabelToolCore", "ImageLabelToolCore\ImageLabelToolCore.vcxproj", "{DE422D70-C2EC-4F40-B75E-C9F0F8B3F152}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3980DAEE-1B87-4756-BA42-0243F931004D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3980DAEE-1B87-4756-BA42-0243F931004D}.Debug|x64.Build.0 = Debug|Any CPU
+		{3980DAEE-1B87-4756-BA42-0243F931004D}.Release|x64.ActiveCfg = Release|Any CPU
+		{3980DAEE-1B87-4756-BA42-0243F931004D}.Release|x64.Build.0 = Release|Any CPU
+		{DE422D70-C2EC-4F40-B75E-C9F0F8B3F152}.Debug|x64.ActiveCfg = Debug|x64
+		{DE422D70-C2EC-4F40-B75E-C9F0F8B3F152}.Debug|x64.Build.0 = Debug|x64
+		{DE422D70-C2EC-4F40-B75E-C9F0F8B3F152}.Release|x64.ActiveCfg = Release|x64
+		{DE422D70-C2EC-4F40-B75E-C9F0F8B3F152}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
