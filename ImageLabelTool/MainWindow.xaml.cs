@@ -8,17 +8,20 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ImageLabelTool.Classes;
+using ImageLabelTool.Controls;
+
 
 namespace ImageLabelTool
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
-    {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
-    }
+	public partial class MainWindow : Window
+	{
+		public MainWindow() {
+			InitializeComponent();
+
+			string before_path_env = Environment.GetEnvironmentVariable("Path")??"";
+			Environment.SetEnvironmentVariable("Path", before_path_env + "./bin;");
+			Core.Initialize(null);
+		}
+	}
 }

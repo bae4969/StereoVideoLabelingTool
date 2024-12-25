@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ImageLabelTool"
+        xmlns:controls="clr-namespace:ImageLabelTool.Controls"
         mc:Ignorable="d"
         Title="MainWindow" Height="900" Width="1600">
 	<Grid>
@@ -33,6 +34,7 @@
 			</Grid.ColumnDefinitions>
 
 
+			<!-- 좌측 패널 -->
 			<Grid Grid.Column="0">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="*" />
@@ -47,42 +49,12 @@
 			
 			<GridSplitter Grid.Column="1" Width="5" Margin="5,0,5,0" HorizontalAlignment="Stretch" Background="Gray" />
 			
-			<!-- 이미지 영역 -->
-			<Border Grid.Column="2" BorderBrush="Gray" BorderThickness="1">
-				<Grid>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="*"/>
-						<ColumnDefinition Width="15"/>
-					</Grid.ColumnDefinitions>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto"/>
-						<RowDefinition Height="*"/>
-						<RowDefinition Height="Auto"/>
-					</Grid.RowDefinitions>
-
-
-					<!-- 이미지 도구 -->
-					<Menu Grid.Row="0" Background="LightGray">
-						<MenuItem Header="Label" FontSize="13" Padding="5" BorderBrush="#AAAAAA"/>
-						<MenuItem Header="Region" FontSize="13" Padding="5" BorderBrush="#AAAAAA"/>
-						<MenuItem Header="설정" FontSize="13" Padding="5" BorderBrush="#AAAAAA"/>
-					</Menu>
-
-					<Canvas x:Name="TopViewCanvas" Grid.Row="1" Background="#202020">
-
-					</Canvas>
-
-					<Canvas x:Name="SideViewCanvas" Grid.Row="2" Background="#202020">
-
-					</Canvas>
-
-					<ScrollBar Grid.Column="2" Grid.Row="1" Minimum="0" Maximum="0" Value="0"/>
-				</Grid>
-			</Border>
+			<!-- 중앙 패널 -->
+			<controls:ImageLabelViewer Grid.Column="2" BorderBrush="Gray" BorderThickness="1"/>
 
 			<GridSplitter Grid.Column="3" Width="5" Margin="5,0,5,0" HorizontalAlignment="Stretch" Background="Gray" />
 
-			<!-- 작업 대상 패널 -->
+			<!-- 우측 패널 -->
 			<Grid Grid.Column="4">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="*" />
@@ -90,14 +62,14 @@
 					<RowDefinition Height="*" />
 				</Grid.RowDefinitions>
 
-				<!-- 작업 대상 리스트 -->
+				<!-- 우측 상단 패널 -->
 				<GroupBox BorderBrush="Gray" BorderThickness="1" Grid.Row="0" Header="Log">
 					<ListView/>
 				</GroupBox>
 
 				<GridSplitter Grid.Row="1" Height="5" Margin="0,5,0,5" HorizontalAlignment="Stretch" Background="Gray" />
 
-				<!-- 수직 스크롤 도구 -->
+				<!-- 우측 하단 패널 -->
 				<GroupBox BorderBrush="Gray" BorderThickness="1" Grid.Row="2" Header="Log">
 					<ScrollViewer VerticalScrollBarVisibility="Visible">
 					</ScrollViewer>
@@ -107,6 +79,7 @@
 		
 		<GridSplitter Grid.Row="2" Height="5" Margin="0,5,0,5" HorizontalAlignment="Stretch" Background="Gray" />
 
+		<!-- 하단 정보 -->
 		<GroupBox BorderBrush="Gray" BorderThickness="1" Grid.Row="3" Header="Log">
 			<TextBlock x:Name="LogTextBlock"/>
 		</GroupBox>

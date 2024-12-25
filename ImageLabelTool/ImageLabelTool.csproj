@@ -11,7 +11,12 @@
     <BaseOutputPath>$(SolutionDir)build</BaseOutputPath>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DefineConstants);MY_DEBUG</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
+    <Folder Include="Pages\" />
     <Folder Include="Windows\" />
   </ItemGroup>
 

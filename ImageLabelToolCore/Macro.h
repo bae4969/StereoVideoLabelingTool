@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef IMAGELABELTOOLCORE_EXPORTS
-#define IMAGELABELTOOLCORE_EXPORTS extern "C" __declspec(dllexport)
+#define CORE_FUNC_EXPORT extern "C" __declspec(dllexport)
 #endif
 
 #define CLASS_VAR_TEMPLATE(TYPE, VAR) protected: TYPE m_##VAR;

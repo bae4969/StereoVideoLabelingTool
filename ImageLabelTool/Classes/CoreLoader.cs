@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace ImageLabelTool.Classes
@@ -15,84 +16,34 @@ namespace ImageLabelTool.Classes
 		const string CORE_DLL_NAME = "ImageLabelToolCore.dll";
 #endif
 
+		public const Int64 CV_8U = 0;
+		public const Int64 CV_8S = 1;
+		public const Int64 CV_16U = 2;
+		public const Int64 CV_16S = 3;
+		public const Int64 CV_32S = 4;
+		public const Int64 CV_32F = 5;
+		public const Int64 CV_64F = 6;
+		public const Int64 CV_16F = 7;
+
 		public delegate void CallbackLogPush(string logStr);
 
-
-		public static string ConvertReturnCodeToString(int returnCode)
-		{
-			switch (returnCode)
-			{
+		public static string ConvertReturnCodeToString(int returnCode) {
+			switch (returnCode) {
 				case 0: return "RETURN_CODE_SUCCESS_OK";
-				case 1: return "RETURN_CODE_SUCCESS_NG";
-				case 100: return "RETURN_CODE_SKIP";
-				case 101: return "RETURN_CODE_SKIP_XOUT";
-				case 102: return "RETURN_CODE_SKIP_BAD_MARK";
-				case -40000: return "RETURN_CODE_UNEXPECT_ERROR";
-				case -40001: return "RETURN_CODE_CONTROL_IS_RUNNING";
-				case -40002: return "RETURN_CODE_LOADING_ID_CARD_ERROR";
-				case -40003: return "RETURN_CODE_SAVING_ID_CARD_ERROR";
-				case -40100: return "RETURN_CODE_SWITCHER_INSP_INSPECTION_ERROR";
-				case -40101: return "RETURN_CODE_SWITCHER_INSP_INSPECTION_INIT_ERROR";
-				case -40102: return "RETURN_CODE_SWITCHER_INSP_INSPECTION_LOAD_ERROR";
-				case -40103: return "RETURN_CODE_SWITCHER_INSP_INSPECTION_SAVE_ERROR";
-				case -40104: return "RETURN_CODE_SWITCHER_INSP_INSPECTION_FLIMAGING_LICENSE_ERROR";
-				case -40105: return "RETURN_CODE_SWITCHER_INSP_INSPECTION_LIBMLFORWARD_INIT_ERROR";
-				case -40106: return "RETURN_CODE_SWITCHER_INSP_INSPECTION_RESOURCE_TABLE_ERROR";
-				case -40107: return "RETURN_CODE_SWITCHER_INSP_INSPECTION_ML_FIRST_RUN_ERROR";
-				case -40108: return "RETURN_CODE_SWITCHER_INSP_INSPECTION_MODEL_INFO_ERROR";
-				case -40109: return "RETURN_CODE_SWITCHER_INSP_INSPECTION_SERVICE_INFO_ERROR";
-				case -40200: return "RETURN_CODE_SWITCHER_INSP_SERVICE_ERROR";
-				case -40201: return "RETURN_CODE_SWITCHER_INSP_SERVICE_INIT_ERROR";
-				case -40202: return "RETURN_CODE_SWITCHER_INSP_SERVICE_LOAD_ERROR";
-				case -40203: return "RETURN_CODE_SWITCHER_INSP_SERVICE_SAVE_ERROR";
-				case -40300: return "RETURN_CODE_METHOD_SEGMENTATION_ERROR";
-				case -40301: return "RETURN_CODE_METHOD_SEGMENTATION_INPUT_ERROR";
-				case -40302: return "RETURN_CODE_METHOD_SEGMENTATION_ML_ERROR";
-				case -40400: return "RETURN_CODE_METHOD_REGISTRATION_ERROR";
-				case -40401: return "RETURN_CODE_METHOD_REGISTRATION_INPUT_ERROR";
-				case -40402: return "RETURN_CODE_METHOD_REGISTRATION_STATIC_SHIFT_METHOD_ERROR";
-				case -40403: return "RETURN_CODE_METHOD_REGISTRATION_PCL_METHOD_ERROR";
-				case -40404: return "RETURN_CODE_METHOD_REGISTRATION_HALCON_METHOD_ERROR";
-				case -40405: return "RETURN_CODE_METHOD_REGISTRATION_3D_SLICE_ERROR";
-				case -40406: return "RETURN_CODE_METHOD_REGISTRATION_MAKE_REF_MODEL_ERROR";
-				case -40500: return "RETURN_CODE_METHOD_AC_ERROR";
-				case -40501: return "RETURN_CODE_METHOD_AC_INPUT_ERROR";
-				case -40502: return "RETURN_CODE_METHOD_AC_COMP_EXTRACTION_ERROR";
-				case -40503: return "RETURN_CODE_METHOD_AC_SEGMENTATION_DLL_ERROR";
-				case -40504: return "RETURN_CODE_METHOD_AC_FEATURE_EXTRACTION_DLL_ERROR";
-				case -40505: return "RETURN_CODE_METHOD_AC_CONCAT_AC_OBJECT_ERROR";
-				case -40506: return "RETURN_CODE_METHOD_AC_CONCAT_COMPONENT_OBJECT_ERROR";
-				case -40507: return "RETURN_CODE_METHOD_AC_GIVE_OBJECT_NAME_ERROR";
-				case -40508: return "RETURN_CODE_METHOD_AC_CAL_OBJECT_REGION_ERROR";
-				case -40600: return "RETURN_CODE_METHOD_JUDG_ERROR";
-				case -40601: return "RETURN_CODE_METHOD_JUDG_INPUT_ERROR";
-				case -40602: return "RETURN_CODE_METHOD_JUDG_DLL_ERROR";
-				case -40700: return "RETURN_CODE_METHOD_SERVICE_NOT_SUPPORTING_TYPE_ERROR";
-				case -40701: return "RETURN_CODE_METHOD_SERVICE_LOAD_ERROR";
-				case -40702: return "RETURN_CODE_METHOD_SERVICE_INIT_ERROR";
-				case -40703: return "RETURN_CODE_METHOD_SERVICE_SAVE_ERROR";
-				case -40704: return "RETURN_CODE_METHOD_SERVICE_EMPTY_ID_ERROR";
-				case -40705: return "RETURN_CODE_METHOD_SERVICE_MISMATCH_ID_ERROR";
-				case -40800: return "RETURN_CODE_METHOD_OBJECT_DETECTION_ERROR";
-				case -40801: return "RETURN_CODE_METHOD_OBJECT_DETECTION_INPUT_ERROR";
-				case -40802: return "RETURN_CODE_METHOD_OBJECT_DETECTION_ML_ERROR";
-				case -40803: return "RETURN_CODE_METHOD_OBJECT_DETECTION_MAPPING_ERROR";
-				case -40804: return "RETURN_CODE_METHOD_OBJECT_DETECTION_ADD_REMAIN_ERROR";
 				default: return "UNDEFINED_RETURN_CODE";
 			}
 		}
+		public static Int64 MakeCvType(Int64 depth, Int64 channels) {
+			return (depth & ((1 << 3) - 1)) + ((channels - 1) << 3);
+		}
 
-		[DllImport(CORE_DLL_NAME)] public static extern int Initialize();
-		[DllImport(CORE_DLL_NAME)] public static extern void Release();
+		[DllImport(CORE_DLL_NAME)] public static extern Int64 Initialize(CallbackLogPush log_callback_func);
+		[DllImport(CORE_DLL_NAME)] public static extern Int64 Release();
 
-		[DllImport(CORE_DLL_NAME)] public static extern int LoadResourceImage(
-			[MarshalAs(UnmanagedType.LPWStr)] String resource_key,
-			[MarshalAs(UnmanagedType.LPWStr)] String file_name,
-			Int64 w = -1,
-			Int64 h = -1,
-			Int64 d = -1
-			);
-		[DllImport(CORE_DLL_NAME)]
-		public static extern int SaveResourceImage();
+		[DllImport(CORE_DLL_NAME)] public static extern Int64 LoadData([MarshalAs(UnmanagedType.LPWStr)] String img_path, [MarshalAs(UnmanagedType.LPWStr)] String lab_path);
+		[DllImport(CORE_DLL_NAME)] public static extern Int64 SaveData([MarshalAs(UnmanagedType.LPWStr)] String img_path, [MarshalAs(UnmanagedType.LPWStr)] String lab_path);
+		[DllImport(CORE_DLL_NAME)] public static extern Int64 UnloadData();
+		[DllImport(CORE_DLL_NAME)] public static extern unsafe Int64 GetInfo(Int64* w, Int64* h, Int64* d);
+		[DllImport(CORE_DLL_NAME)] public static extern unsafe Int64 GetData(Int64 z, byte* data_ptr);
 	}
 }

@@ -3,6 +3,9 @@
     "ImageLabelTool": {
       "commandName": "Project",
       "workingDirectory": "$(SolutionDir)build",
+      "environmentVariables": {
+        "Path": "D:/exlib/x64/bin;D:/exlib/cuda/bin;D:/exlib/TV/bin;"
+      },
       "nativeDebugging": true
     }
   }

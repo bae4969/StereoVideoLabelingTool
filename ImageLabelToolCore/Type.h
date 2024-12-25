@@ -20,61 +20,94 @@ namespace ImageLabelTool
 
 		enum RETURN_CODE : int64_t {
 			RETURN_CODE_SUCCESS = 0,
-			RETURN_CODE_NORMAL_EXCEPTION = -100,
+			RETURN_CODE_NOTHING_CHANGED = 1000,
+
+			RETURN_CODE_UNEXPECTED_EXCEPTION = -1000,
+			RETURN_CODE_API_INPUT = -1001,
+			RETURN_CODE_FILE_IO = -1002,
+			RETURN_CODE_MISMATCH_IMAGE_AND_LABEL = -1002,
+			RETURN_CODE_EMPTY_RESOURCE = -1003,
+		};
+
+		enum class IMG_MODE {
+			NONE,
+			GRAY,
+			COLOR,
+			VIDEO,
 		};
 
 #pragma endregion
 
 #pragma region TYPE
 
+		using ImgBaseType = itk::ImageBase<2>;
 		using Img8Type = itk::Image<UCHAR, 2>;
 		using Img16Type = itk::Image<USHORT, 2>;
 		using Img32Type = itk::Image<FLOAT, 2>;
 		using Img64Type = itk::Image<double, 2>;
+		using ImgRGBType = itk::Image<itk::RGBPixel<UCHAR>, 2>;
+		using ImgRGBAType = itk::Image<itk::RGBAPixel<UCHAR>, 2>;
+		using ImgComplexType = itk::Image<std::complex<float>, 2>;
 
+		using VolBaseType = itk::ImageBase<3>;
 		using Vol8Type = itk::Image<UCHAR, 3>;
 		using Vol16Type = itk::Image<USHORT, 3>;
 		using Vol32Type = itk::Image<FLOAT, 3>;
 		using Vol64Type = itk::Image<double, 3>;
+		using VolRGBType = itk::Image<itk::RGBPixel<UCHAR>, 3>;
+		using VolRGBAType = itk::Image<itk::RGBAPixel<UCHAR>, 3>;
+		using VolComplexType = itk::Image<std::complex<float>, 3>;
 
 		using TransformType = itk::Transform<double>;
 
+		using ImgBasePtr = ImgBaseType::Pointer;
 		using Img8Ptr = Img8Type::Pointer;
 		using Img16Ptr = Img16Type::Pointer;
 		using Img32Ptr = Img32Type::Pointer;
 		using Img64Ptr = Img64Type::Pointer;
+		using ImgRGBPtr = ImgRGBType::Pointer;
+		using ImgRGBAPtr = ImgRGBAType::Pointer;
+		using ImgComplexPtr = ImgComplexType::Pointer;
 
+		using VolBasePtr = VolBaseType::Pointer;
 		using Vol8Ptr = Vol8Type::Pointer;
 		using Vol16Ptr = Vol16Type::Pointer;
 		using Vol32Ptr = Vol32Type::Pointer;
 		using Vol64Ptr = Vol64Type::Pointer;
+		using VolRGBPtr = VolRGBType::Pointer;
+		using VolRGBAPtr = VolRGBAType::Pointer;
+		using VolComplexPtr = VolComplexType::Pointer;
+
 
 		using CuImg8Type = itk::CudaImage<UCHAR, 2>;
 		using CuImg16Type = itk::CudaImage<USHORT, 2>;
 		using CuImg32Type = itk::CudaImage<FLOAT, 2>;
 		using CuImg64Type = itk::CudaImage<double, 2>;
+		using CuImgRGBType = itk::CudaImage<itk::RGBPixel<UCHAR>, 2>;
+		using CuImgRGBAType = itk::CudaImage<itk::RGBAPixel<UCHAR>, 2>;
 
 		using CuVol8Type = itk::CudaImage<UCHAR, 3>;
 		using CuVol16Type = itk::CudaImage<USHORT, 3>;
 		using CuVol32Type = itk::CudaImage<FLOAT, 3>;
 		using CuVol64Type = itk::CudaImage<double, 3>;
-
-		using ComplexImgType = itk::Image<std::complex<float>, 2>;
-		using ComplexVolType = itk::Image<std::complex<float>, 3>;
+		using CuVolRGBType = itk::CudaImage<itk::RGBPixel<UCHAR>, 3>;
+		using CuVolRGBAType = itk::CudaImage<itk::RGBAPixel<UCHAR>, 3>;
 
 
 		using CuImg8Ptr = CuImg8Type::Pointer;
 		using CuImg16Ptr = CuImg16Type::Pointer;
 		using CuImg32Ptr = CuImg32Type::Pointer;
 		using CuImg64Ptr = CuImg64Type::Pointer;
+		using CuImgRGBPtr = CuImgRGBType::Pointer;
+		using CuImgRGBAPtr = CuImgRGBAType::Pointer;
 
 		using CuVol8Ptr = CuVol8Type::Pointer;
 		using CuVol16Ptr = CuVol16Type::Pointer;
 		using CuVol32Ptr = CuVol32Type::Pointer;
 		using CuVol64Ptr = CuVol64Type::Pointer;
+		using CuVolRGBPtr = CuVolRGBType::Pointer;
+		using CuVolRGBAPtr = CuVolRGBAType::Pointer;
 
-		using ComplexImgPtr = ComplexImgType::Pointer;
-		using ComplexVolPtr = ComplexVolType::Pointer;
 
 		using TransformPtr = TransformType::Pointer;
 
@@ -108,37 +141,20 @@ namespace ImageLabelTool
 
 #pragma region FUNCTION
 
+		std::string GetCurrentDateTime(bool isMili = true, bool isSpliter = true);
 		std::string GetVersionString(const VersionType& ver);
-
-		Vol16Ptr ConvertTVRawToItk(std::shared_ptr<TV::Image::TVRaw> tvRaw);
-		std::vector<Vol16Ptr> ConvertTVRawContainerToItkList(TV::Image::TVRawContainer& tvRawContainer);
-
-		template<typename ImgType>
-		void ConvertItkToTVRaw(std::shared_ptr<TV::Image::TVRaw> out_tvRaw, typename ImgType::Pointer img, std::shared_ptr<TV::Image::TVRaw> in_copyInfo);
-
-		template<typename ImgType>
-		Cuda::CudaVolume<typename ImgType::PixelType> ConvertItkToCuda(size_t deviceID, typename ImgType::Pointer vol);
-
-		template<typename IN_TYPE>
-		cv::Mat GetCvSlice(typename IN_TYPE::Pointer input, int64_t slice_index);
-
-		template<typename TYPE>
-		typename TYPE::Pointer ExtractNormal(typename TYPE::Pointer src, TransformPtr transform, SIZE3 size);
-		template<typename TYPE>
-		typename TYPE::Pointer ExtractSlice(typename TYPE::Pointer src, TransformPtr transform, SIZE3 size, double zOffset);
-
-		template<typename TYPE>
-		bool SaveRaw(std::filesystem::path filePath, typename TYPE::Pointer label);
-		template<typename TYPE>
-		bool SaveTiff(std::filesystem::path filePath, typename TYPE::Pointer label);
-
+		bool IsMatchVersion(VersionType& a, VersionType& b, size_t match = 4);
+		size_t RemainMemoryBytes();
 		size_t RemoveWithoutLastWrite(std::filesystem::path targetDir, size_t num_remain);
 
-		bool IsMatchVersion(VersionType& a, VersionType& b, size_t match = 4);
+		std::tuple<IMG_MODE, VolBasePtr> LoadImageFile(std::filesystem::path filename);
+		Vol8Ptr LoadLabelFile(std::filesystem::path filename);
+		bool SaveItkFile(std::filesystem::path filePath, VolBasePtr vol);
 
-		size_t RemainMemoryBytes();
-
-		std::string GetCurrentDateTime(bool isMili = true, bool isSpliter = true);
+		template<typename TYPE>
+		cv::Mat GetCvSlice(typename TYPE::Pointer input, int64_t slice_index, int64_t cv_type);
+		template<typename ImgType>
+		Cuda::CudaVolume<typename ImgType::PixelType> GetCudaVolume(size_t deviceID, typename ImgType::Pointer vol);
 
 #pragma endregion
 	}

@@ -22,9 +22,11 @@
 #include <itkRawImageIO.h>
 #include <itkMetaImageIO.h>
 #include <itkTIFFImageIO.h>
+#include <itkPngImageIO.h>
 #include <itkCudaDataManager.h>
 #include <itkResampleImageFilter.h>
 #include <itkCastImageFilter.h>
+#include <itkStatisticsImageFilter.h>
 #include <itkNearestNeighborInterpolateImageFunction.h>
 
 #endif

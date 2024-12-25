@@ -25,6 +25,12 @@
     <Filter Include="헤더 파일\Cuda">
       <UniqueIdentifier>{45dac560-a2c9-47c0-8a6f-0970ef9e6f84}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Module">
+      <UniqueIdentifier>{56bd3c25-6fdc-4814-b1f1-6d860bfe1e1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Module">
+      <UniqueIdentifier>{7aa7b548-97fb-4cba-90f7-cf66d9564c7d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -58,9 +64,15 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="CudaMacro.cuh" />
-    <CudaCompile Include="CudaType.cu" />
-    <CudaCompile Include="CudaType.cuh" />
+    <CudaCompile Include="CudaMacro.cuh">
+      <Filter>소스 파일\Cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="CudaType.cuh">
+      <Filter>소스 파일\Cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="CudaType.cu">
+      <Filter>헤더 파일\Cuda</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
