@@ -16,14 +16,11 @@ namespace ImageLabelTool.Classes
 		const string CORE_DLL_NAME = "ImageLabelToolCore.dll";
 #endif
 
-		public const Int64 CV_8U = 0;
-		public const Int64 CV_8S = 1;
-		public const Int64 CV_16U = 2;
-		public const Int64 CV_16S = 3;
-		public const Int64 CV_32S = 4;
-		public const Int64 CV_32F = 5;
-		public const Int64 CV_64F = 6;
-		public const Int64 CV_16F = 7;
+		public const Int64 IMG_TYPE_ERROR = -1;
+		public const Int64 IMG_TYPE_NONE = 0;
+		public const Int64 IMG_TYPE_GRAY = 1;
+		public const Int64 IMG_TYPE_RGBA = 2;
+		public const Int64 IMG_TYPE_VIDEO = 3;
 
 		public delegate void CallbackLogPush(string logStr);
 
@@ -33,17 +30,13 @@ namespace ImageLabelTool.Classes
 				default: return "UNDEFINED_RETURN_CODE";
 			}
 		}
-		public static Int64 MakeCvType(Int64 depth, Int64 channels) {
-			return (depth & ((1 << 3) - 1)) + ((channels - 1) << 3);
-		}
 
-		[DllImport(CORE_DLL_NAME)] public static extern Int64 Initialize(CallbackLogPush log_callback_func);
+		[DllImport(CORE_DLL_NAME)] public static extern Int64 Initialize(CallbackLogPush? log_callback_func);
 		[DllImport(CORE_DLL_NAME)] public static extern Int64 Release();
 
 		[DllImport(CORE_DLL_NAME)] public static extern Int64 LoadData([MarshalAs(UnmanagedType.LPWStr)] String img_path, [MarshalAs(UnmanagedType.LPWStr)] String lab_path);
 		[DllImport(CORE_DLL_NAME)] public static extern Int64 SaveData([MarshalAs(UnmanagedType.LPWStr)] String img_path, [MarshalAs(UnmanagedType.LPWStr)] String lab_path);
 		[DllImport(CORE_DLL_NAME)] public static extern Int64 UnloadData();
-		[DllImport(CORE_DLL_NAME)] public static extern unsafe Int64 GetInfo(Int64* w, Int64* h, Int64* d);
-		[DllImport(CORE_DLL_NAME)] public static extern unsafe Int64 GetData(Int64 z, byte* data_ptr);
+		[DllImport(CORE_DLL_NAME)] public static extern unsafe Int64 GetDataInfo(Int64* type, Int64* w, Int64* h, Int64* d, Int32** img_data_ptr, Byte** lab_data_ptr);
 	}
 }

@@ -14,16 +14,20 @@ namespace ImageLabelTool
 
 		int64_t Initialize(TV::LOG::CallbackLogString log_callback_func) {
 			int64_t ret_code = RETURN_CODE_UNEXPECTED_EXCEPTION;
-			try { g_Switcher = make_shared<SwitcherType>(log_callback_func); }
+			try {
+				g_Switcher = make_shared<SwitcherType>(log_callback_func);
+				ret_code = RETURN_CODE_SUCCESS;
+			}
 			AUTO_CATCH(LOG_E("{:s}", ERROR_MSG));
 			return ret_code;
 		}
 		int64_t Release() {
 			int64_t ret_code = RETURN_CODE_UNEXPECTED_EXCEPTION;
 			try {
-				g_Switcher = NULL;
 				itk::ObjectFactoryBase::UnRegisterAllFactories();
 				itk::MultiThreaderBase::SetGlobalDefaultNumberOfThreads(1);
+				g_Switcher = NULL;
+				ret_code = RETURN_CODE_SUCCESS;
 			}
 			AUTO_CATCH(LOG_E("{:s}", ERROR_MSG));
 			return ret_code;
@@ -47,15 +51,9 @@ namespace ImageLabelTool
 			AUTO_CATCH(LOG_E("{:s}", ERROR_MSG));
 			return ret_code;
 		}
-		int64_t GetInfo(int64_t* w, int64_t* h, int64_t* d) {
+		int64_t GetDataInfo(int64_t* type, int64_t* w, int64_t* h, int64_t* d, void** img_data_ptr, void** lab_data_ptr) {
 			int64_t ret_code = RETURN_CODE_UNEXPECTED_EXCEPTION;
-			try { ret_code = g_Switcher->GetInfo(w, h, d); }
-			AUTO_CATCH(LOG_E("{:s}", ERROR_MSG));
-			return ret_code;
-		}
-		int64_t GetData(int64_t z, uchar* data_ptr) {
-			int64_t ret_code = RETURN_CODE_UNEXPECTED_EXCEPTION;
-			try { ret_code = g_Switcher->GetData(z, data_ptr); }
+			try { ret_code = g_Switcher->GetDataInfo(type, w, h, d, img_data_ptr, lab_data_ptr); }
 			AUTO_CATCH(LOG_E("{:s}", ERROR_MSG));
 			return ret_code;
 		}

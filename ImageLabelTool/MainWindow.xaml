@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ImageLabelTool"
         xmlns:controls="clr-namespace:ImageLabelTool.Controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="900" Width="1600">
+        Title="MainWindow" Height="900" Width="1600" Closing="Window_Closing">
 	<Grid>
 		<!-- 전체 Layout -->
 		<Grid.RowDefinitions>
@@ -50,7 +50,7 @@
 			<GridSplitter Grid.Column="1" Width="5" Margin="5,0,5,0" HorizontalAlignment="Stretch" Background="Gray" />
 			
 			<!-- 중앙 패널 -->
-			<controls:ImageLabelViewer Grid.Column="2" BorderBrush="Gray" BorderThickness="1"/>
+			<controls:ImageLabelViewer x:Name="ImageLabelViewerControl" Grid.Column="2" BorderBrush="Gray" BorderThickness="1"/>
 
 			<GridSplitter Grid.Column="3" Width="5" Margin="5,0,5,0" HorizontalAlignment="Stretch" Background="Gray" />
 

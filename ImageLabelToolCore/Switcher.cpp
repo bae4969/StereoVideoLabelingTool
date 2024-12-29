@@ -83,7 +83,7 @@ namespace ImageLabelTool
 			__img_mode = img_mode;
 			__img_vol = img_base;
 			__lab_vol = vol8;
-			__out_img = Mat::zeros(imgRegion.GetSize(1), imgRegion.GetSize(0), CV_8UC4);
+			__out_data = Mat::zeros(imgRegion.GetSize(1), imgRegion.GetSize(0), CV_8UC4);
 			if (img_mode == IMG_MODE::GRAY)
 				__gray_info = make_shared<GrayInfoType>(dynamic_cast<Vol32Type*>(img_base.GetPointer()));
 
@@ -108,47 +108,37 @@ namespace ImageLabelTool
 			__img_mode = IMG_MODE::NONE;
 			__img_vol = NULL;
 			__lab_vol = NULL;
-			__out_img = Mat();
+			__out_data = Mat();
 			__profile = NULL;
 
 			return RETURN_CODE_SUCCESS;
 		}
-		RETURN_CODE SwitcherType::GetInfo(int64_t* w, int64_t* h, int64_t* d) {
+		RETURN_CODE SwitcherType::GetDataInfo(int64_t* type, int64_t* w, int64_t* h, int64_t* d, void** img_data_ptr, void** lab_data_ptr) {
 			std::unique_lock lock(__mutex);
 			if (!__img_vol) return RETURN_CODE_EMPTY_RESOURCE;
 
 			auto size = __img_vol->GetLargestPossibleRegion().GetSize();
+			if (type) {
+				switch (__img_mode) {
+				case IMG_MODE::GRAY:	*type = 1;	break;
+				case IMG_MODE::COLOR:	*type = 2;	break;
+				case IMG_MODE::VIDEO:	*type = 3;	break;
+				default:				*type = -1;	break;
+				}
+			}
 			if (w) *w = size[0];
 			if (h) *h = size[1];
 			if (d) *d = size[2];
-
-			return RETURN_CODE_SUCCESS;
-		}
-		RETURN_CODE SwitcherType::GetData(int64_t z, uchar* data_ptr) {
-			std::unique_lock lock(__mutex);
-			if (!__img_vol) return RETURN_CODE_EMPTY_RESOURCE;
-
-			if (__img_mode == IMG_MODE::GRAY) {
-				Vol32Ptr vol32 = dynamic_cast<Vol32Type*>(__img_vol.GetPointer());
-				Mat t_slice32 = GetCvSlice<Vol32Type>(vol32, z, CV_32F);
-				if (t_slice32.empty()) return RETURN_CODE_API_INPUT;
-
-				Mat t_slice8;
-				t_slice32.convertTo(t_slice8, CV_8U, 1.f / (__gray_info->Max - __gray_info->Min), -__gray_info->Min);
-
-				cvtColor(t_slice8, __out_img, COLOR_GRAY2BGRA);
+			if (img_data_ptr) {
+				switch (__img_mode) {
+				case IMG_MODE::GRAY:	*img_data_ptr = dynamic_cast<Vol32Type*>(__img_vol.GetPointer())->GetBufferPointer();	break;
+				case IMG_MODE::COLOR:	*img_data_ptr = dynamic_cast<VolRGBAType*>(__img_vol.GetPointer())->GetBufferPointer();	break;
+				case IMG_MODE::VIDEO:
+				default:				*type = -1;	break;
+				}
 			}
-			else if (__img_mode == IMG_MODE::COLOR) {
-				VolRGBAPtr volRGBA = dynamic_cast<VolRGBAType*>(__img_vol.GetPointer());
-				Mat t_slice = GetCvSlice<VolRGBAType>(volRGBA, z, CV_8UC4);
-				if (t_slice.empty()) return RETURN_CODE_API_INPUT;
-				cvtColor(t_slice, __out_img, COLOR_RGBA2BGRA);
-			}
-			else
-				throw exception("Invalid Image Mode");
-
-			size_t tot_len = __out_img.size().area() * __out_img.elemSize();
-			memcpy_s(data_ptr, tot_len, __out_img.data, tot_len);
+			if (lab_data_ptr)
+				*lab_data_ptr = __lab_vol->GetBufferPointer();
 
 			return RETURN_CODE_SUCCESS;
 		}

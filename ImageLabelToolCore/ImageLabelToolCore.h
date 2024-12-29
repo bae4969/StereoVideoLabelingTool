@@ -12,8 +12,7 @@ namespace ImageLabelTool
 		CORE_FUNC_EXPORT int64_t LoadData(const wchar_t* img_path, const wchar_t* lab_path);
 		CORE_FUNC_EXPORT int64_t SaveData(const wchar_t* img_path, const wchar_t* lab_path);
 		CORE_FUNC_EXPORT int64_t UnloadData();
-		CORE_FUNC_EXPORT int64_t GetInfo(int64_t* w, int64_t* h, int64_t* d);
-		CORE_FUNC_EXPORT int64_t GetData(int64_t z, uchar* data_ptr);
+		CORE_FUNC_EXPORT int64_t GetDataInfo(int64_t* type, int64_t* w, int64_t* h, int64_t* d, void** img_data_ptr, void** lab_data_ptr);
 	}
 }
 

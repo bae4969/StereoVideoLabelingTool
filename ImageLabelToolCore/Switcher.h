@@ -24,7 +24,7 @@ namespace ImageLabelTool
 			IMG_MODE __img_mode;
 			VolBasePtr __img_vol;
 			Vol8Ptr __lab_vol;
-			cv::Mat __out_img;
+			cv::Mat __out_data;
 			std::shared_ptr<GrayInfoType> __gray_info;
 			std::shared_ptr<tinyxml2::XMLDocument> __profile;
 
@@ -39,8 +39,7 @@ namespace ImageLabelTool
 			RETURN_CODE LoadData(std::filesystem::path img_path, std::filesystem::path lab_path);
 			RETURN_CODE SaveData(std::filesystem::path img_path, std::filesystem::path lab_path);
 			RETURN_CODE UnloadData();
-			RETURN_CODE GetInfo(int64_t* w, int64_t* h, int64_t* d);
-			RETURN_CODE GetData(int64_t z, uchar* data_ptr);
+			RETURN_CODE GetDataInfo(int64_t* type, int64_t* w, int64_t* h, int64_t* d, void** img_data_ptr, void** lab_data_ptr);
 		};
 	}
 }
