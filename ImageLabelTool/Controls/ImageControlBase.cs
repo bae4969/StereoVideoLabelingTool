@@ -10,7 +10,7 @@ namespace ImageLabelTool.Controls
 {
     public abstract class ImageControlBase : UserControl
 	{
-		public abstract unsafe void OnLoadImageData(Int64 type, SIZE3 size, Int32* img_data_ptr, Byte* lab_data_ptr);
+		public abstract unsafe void OnLoadImageData(IMG_TYPE type, SIZE3 size, int* img_data_ptr, byte* lab_data_ptr);
         public abstract unsafe void OnUnloadImageData();
 
         public abstract unsafe void OnUpstreamImageData();

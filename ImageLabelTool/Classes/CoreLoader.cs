@@ -37,6 +37,6 @@ namespace ImageLabelTool.Classes
 		[DllImport(CORE_DLL_NAME)] public static extern Int64 LoadData([MarshalAs(UnmanagedType.LPWStr)] String img_path, [MarshalAs(UnmanagedType.LPWStr)] String lab_path);
 		[DllImport(CORE_DLL_NAME)] public static extern Int64 SaveData([MarshalAs(UnmanagedType.LPWStr)] String img_path, [MarshalAs(UnmanagedType.LPWStr)] String lab_path);
 		[DllImport(CORE_DLL_NAME)] public static extern Int64 UnloadData();
-		[DllImport(CORE_DLL_NAME)] public static extern unsafe Int64 GetDataInfo(Int64* type, Int64* w, Int64* h, Int64* d, Int32** img_data_ptr, Byte** lab_data_ptr);
+		[DllImport(CORE_DLL_NAME)] public static extern unsafe Int64 GetDataInfo(Int64* type, Int64* w, Int64* h, Int64* d, int** img_data_ptr, byte** lab_data_ptr);
 	}
 }

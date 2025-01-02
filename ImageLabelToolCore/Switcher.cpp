@@ -120,9 +120,9 @@ namespace ImageLabelTool
 			auto size = __img_vol->GetLargestPossibleRegion().GetSize();
 			if (type) {
 				switch (__img_mode) {
-				case IMG_MODE::GRAY:	*type = 1;	break;
-				case IMG_MODE::COLOR:	*type = 2;	break;
-				case IMG_MODE::VIDEO:	*type = 3;	break;
+				case IMG_MODE::GRAY:	*type = 0;	break;
+				case IMG_MODE::COLOR:	*type = 1;	break;
+				case IMG_MODE::VIDEO:	*type = 2;	break;
 				default:				*type = -1;	break;
 				}
 			}
