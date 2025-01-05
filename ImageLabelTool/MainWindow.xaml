@@ -6,7 +6,11 @@
         xmlns:local="clr-namespace:ImageLabelTool"
         xmlns:controls="clr-namespace:ImageLabelTool.Controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="900" Width="1600" Closing="Window_Closing">
+        Title="MainWindow"
+		Height="900"
+		Width="1600"
+		Closing="Window_Closing"
+		>
 	<Grid>
 		<!-- 전체 Layout -->
 		<Grid.RowDefinitions>
@@ -17,10 +21,10 @@
 		</Grid.RowDefinitions>
 
 		<!-- 상단 메뉴바 -->
-		<Menu Grid.Row="0" Margin="0,0,0,5" Background="LightGray">
-			<MenuItem Header="저장" FontSize="16" FontWeight="Bold" Padding="5" BorderBrush="#AAAAAA"/>
-			<MenuItem Header="불러오기" FontSize="16" FontWeight="Bold" Padding="5" BorderBrush="#AAAAAA"/>
-			<MenuItem Header="설정" FontSize="16" FontWeight="Bold" Padding="5" BorderBrush="#AAAAAA"/>
+		<Menu Grid.Row="0">
+			<MenuItem Header="저장" FontSize="16" FontWeight="Bold"/>
+			<MenuItem Header="불러오기" FontSize="16" FontWeight="Bold"/>
+			<MenuItem Header="설정" FontSize="16" FontWeight="Bold"/>
 		</Menu>
 
 		<!-- 메인 컨텐츠 -->
@@ -43,19 +47,19 @@
 				</Grid.RowDefinitions>
 			</Grid>
 
-			<GroupBox BorderBrush="Gray" BorderThickness="1" Grid.Row="0" Header="Log">
+			<GroupBox BorderThickness="1" Grid.Row="0" Header="Log">
 				<StackPanel>
 					<Button Click="Button1_Click" Height="100" Margin="5"/>
 					<Button Click="Button2_Click" Height="100" Margin="5"/>
 				</StackPanel>
 			</GroupBox>
 
-			<GridSplitter Grid.Column="1" Width="5" Margin="5,0,5,0" HorizontalAlignment="Stretch" Background="Gray" />
+			<GridSplitter Grid.Column="1" Width="5" Margin="5,0,5,0" HorizontalAlignment="Stretch" />
 
 			<!-- 중앙 패널 -->
-			<controls:ImageLabelViewer x:Name="ImageLabelViewerControl" Grid.Column="2" BorderBrush="Gray" BorderThickness="1"/>
+			<controls:ImageLabelViewer x:Name="ImageLabelViewerControl" Grid.Column="2"  BorderThickness="1"/>
 
-			<GridSplitter Grid.Column="3" Width="5" Margin="5,0,5,0" HorizontalAlignment="Stretch" Background="Gray" />
+			<GridSplitter Grid.Column="3" Width="5" Margin="5,0,5,0" HorizontalAlignment="Stretch" />
 
 			<!-- 우측 패널 -->
 			<Grid Grid.Column="4">
@@ -66,24 +70,24 @@
 				</Grid.RowDefinitions>
 
 				<!-- 우측 상단 패널 -->
-				<GroupBox BorderBrush="Gray" BorderThickness="1" Grid.Row="0" Header="Log">
+				<GroupBox BorderThickness="1" Grid.Row="0" Header="Log">
 					<ListView/>
 				</GroupBox>
 
-				<GridSplitter Grid.Row="1" Height="5" Margin="0,5,0,5" HorizontalAlignment="Stretch" Background="Gray" />
+				<GridSplitter Grid.Row="1" Height="5" Margin="0,5,0,5" HorizontalAlignment="Stretch" />
 
 				<!-- 우측 하단 패널 -->
-				<GroupBox BorderBrush="Gray" BorderThickness="1" Grid.Row="2" Header="Log">
+				<GroupBox BorderThickness="1" Grid.Row="2" Header="Log">
 					<ScrollViewer VerticalScrollBarVisibility="Visible">
 					</ScrollViewer>
 				</GroupBox>
 			</Grid>
 		</Grid>
 
-		<GridSplitter Grid.Row="2" Height="5" Margin="0,5,0,5" HorizontalAlignment="Stretch" Background="Gray" />
+		<GridSplitter Grid.Row="2" Height="5" Margin="0,5,0,5" HorizontalAlignment="Stretch" />
 
 		<!-- 하단 정보 -->
-		<GroupBox BorderBrush="Gray" BorderThickness="1" Grid.Row="3" Header="Log">
+		<GroupBox BorderThickness="1" Grid.Row="3" Header="Log">
 			<TextBlock x:Name="LogTextBlock"/>
 		</GroupBox>
 	</Grid>

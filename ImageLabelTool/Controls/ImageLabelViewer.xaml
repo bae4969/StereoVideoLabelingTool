@@ -5,7 +5,10 @@
 						xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 						xmlns:local="clr-namespace:ImageLabelTool.Controls"
 						mc:Ignorable="d" 
-						d:DesignHeight="600" d:DesignWidth="600">
+						d:DesignHeight="600"
+						d:DesignWidth="600"
+						SizeChanged="ImageControlBase_SizeChanged"
+						>
 
 	<Grid>
 		<Grid.ColumnDefinitions>
@@ -22,14 +25,11 @@
 		<!-- 이미지 도구 -->
 		<Menu
 			Grid.ColumnSpan="2"
-			Background="LightGray"
 			>
 
 			<MenuItem
 				Header="Label"
 				FontSize="13"
-				Padding="5"
-				BorderBrush="#AAAAAA"
 				>
 
 				<MenuItem Header="Brush Style">
@@ -60,8 +60,8 @@
 				</MenuItem>
 
 			</MenuItem>
-			<MenuItem Header="Region" FontSize="13" Padding="5" BorderBrush="#AAAAAA"/>
-			<MenuItem Header="설정" FontSize="13" Padding="5" BorderBrush="#AAAAAA"/>
+			<MenuItem Header="Region" FontSize="13"/>
+			<MenuItem Header="설정" FontSize="13"/>
 		</Menu>
 
 		<Canvas
@@ -70,7 +70,6 @@
 			Grid.Row="1"
 			Background="#202020"
 			ClipToBounds="True"
-			SizeChanged="ViewCanvas_SizeChanged"
 			MouseWheel="ViewCanvas_MouseWheel"
 			MouseDown="ViewCanvas_MouseDown"
 			MouseMove="ViewCanvas_MouseMove"
@@ -85,9 +84,29 @@
 					<TransformGroup x:Name="TopViewTransformGroup">
 						<ScaleTransform x:Name="TopViewScale" ScaleX="1.0" ScaleY="1.0" CenterX="0" CenterY="0"/>
 						<TranslateTransform x:Name="TopViewTranslate" X="0" Y="0"/>
+						<RotateTransform x:Name="TopViewRotation" Angle="0"/>
 					</TransformGroup>
 				</Image.RenderTransform>
 			</Image>
+
+			<Line
+				x:Name="HorizontalLine"
+				Visibility="Collapsed"
+				Stroke="Yellow"
+				StrokeThickness="1"
+				>
+
+			</Line>
+
+			<Line
+				x:Name="VerticalLine"
+				Visibility="Collapsed"
+				Stroke="Yellow"
+				StrokeThickness="1"
+				>
+
+			</Line>
+
 		</Canvas>
 
 		<Canvas
@@ -96,13 +115,12 @@
 			Grid.Row="2"
 			Background="#202020"
 			ClipToBounds="True"
-			SizeChanged="ViewCanvas_SizeChanged"
 			MouseWheel="ViewCanvas_MouseWheel"
 			MouseDown="ViewCanvas_MouseDown"
 			MouseMove="ViewCanvas_MouseMove"
 			MouseUp="ViewCanvas_MouseUp"
 			>
-			
+
 			<Image
 				x:Name="SideViewImage"
 				Stretch="None"
@@ -115,6 +133,15 @@
 					</TransformGroup>
 				</Image.RenderTransform>
 			</Image>
+
+			<Line
+				x:Name="DepthLine"
+				Visibility="Collapsed"
+				Stroke="Yellow"
+				StrokeThickness="1"
+				>
+
+			</Line>
 		</Canvas>
 
 		<ScrollBar
@@ -123,7 +150,7 @@
 			Grid.Row="1"
 			Grid.RowSpan="2"
 			Minimum="0"
-			Value="0"
+            Value="0"
 			Maximum="0"
 			ValueChanged="DepthScrollBar_ValueChanged"
 			/>

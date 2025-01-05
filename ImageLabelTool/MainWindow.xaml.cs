@@ -113,10 +113,14 @@ namespace ImageLabelTool
 		}
 
 		private void Button1_Click(object sender, RoutedEventArgs e) {
+			__img_filename = "C:\\temp\\3D AXI\\Alpine\\Images\\Alpine_sample1_1point_1st_ReconResult.tif";
+			__lab_filename = "C:\\temp\\3D AXI\\Alpine\\Labels\\Alpine_sample1_1point_1st_ReconResult.tif";
 			OnLoadImageData();
+			Keyboard.ClearFocus();
 		}
 		private void Button2_Click(object sender, RoutedEventArgs e) {
 			Core.SaveData("./img.tif", "./lab.tif");
+			Keyboard.ClearFocus();
 		}
 	}
 }
