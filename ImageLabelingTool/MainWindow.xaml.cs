@@ -10,11 +10,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml;
-using ImageLabelTool.Classes;
-using ImageLabelTool.Controls;
+using ImageLabelingTool.Classes;
+using ImageLabelingTool.Controls;
 
 
-namespace ImageLabelTool
+namespace ImageLabelingTool
 {
 	public partial class MainWindow : Window
 	{
@@ -123,6 +123,8 @@ namespace ImageLabelTool
 		}
 
 		private void Button1_Click(object sender, RoutedEventArgs e) {
+			__img_filename = "C:\\temp\\3D AXI\\Alpine\\Images\\Alpine_sample1_1point_1st_ReconResult.tif";
+			__lab_filename = "C:\\temp\\3D AXI\\Alpine\\Labels\\Alpine_sample1_1point_1st_ReconResult.tif";
 			OnLoadImageInfo();
 			Keyboard.ClearFocus();
 		}

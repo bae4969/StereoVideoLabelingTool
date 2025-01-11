@@ -39,7 +39,7 @@
     <ClInclude Include="Type.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="ImageLabelToolCore.h">
+    <ClInclude Include="ImageLabelingToolCore.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Macro.h">
@@ -50,7 +50,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ImageLabelToolCore.cpp">
+    <ClCompile Include="ImageLabelingToolCore.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">

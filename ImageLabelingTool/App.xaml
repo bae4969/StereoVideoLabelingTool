@@ -1,7 +1,7 @@
-﻿<Application x:Class="ImageLabelTool.App"
+﻿<Application x:Class="ImageLabelingTool.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:ImageLabelTool"
+             xmlns:local="clr-namespace:ImageLabelingTool"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
 		<ResourceDictionary>

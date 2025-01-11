@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ImageLabelTool.Classes
+namespace ImageLabelingTool.Classes
 {
 	public enum LOG_TYPE
 	{

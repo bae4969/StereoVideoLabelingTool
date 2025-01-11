@@ -6,14 +6,14 @@ using System.Text;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
-namespace ImageLabelTool.Classes
+namespace ImageLabelingTool.Classes
 {
 	internal class Core
 	{
 #if MY_DEBUG
-		const string CORE_DLL_NAME = "ImageLabelToolCore_d.dll";
+		const string CORE_DLL_NAME = "ImageLabelingToolCore_d.dll";
 #else
-		const string CORE_DLL_NAME = "ImageLabelToolCore.dll";
+		const string CORE_DLL_NAME = "ImageLabelingToolCore.dll";
 #endif
 
 		public const Int64 IMG_TYPE_ERROR = -1;

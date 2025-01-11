@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Xml;
-using ImageLabelTool.Classes;
+using ImageLabelingTool.Classes;
 
-namespace ImageLabelTool.Controls
+namespace ImageLabelingTool.Controls
 {
 	public enum IMG_TYPE
 	{

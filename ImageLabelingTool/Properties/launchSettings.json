@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "ImageLabelTool": {
+    "ImageLabelingTool": {
       "commandName": "Project",
       "workingDirectory": "$(SolutionDir)build",
       "environmentVariables": {

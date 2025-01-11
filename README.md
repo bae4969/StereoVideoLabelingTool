@@ -1,1 +1,1 @@
-# ImageLabelTool
+# ImageLabelingTool

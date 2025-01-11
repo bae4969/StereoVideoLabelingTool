@@ -1,5 +1,5 @@
 ﻿#include "pch.h"
-#include "ImageLabelToolCore.h"
+#include "ImageLabelingToolCore.h"
 #include "Switcher.h"
 
 namespace ImageLabelTool

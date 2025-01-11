@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Documents;
 using Point = System.Windows.Point;
 
-namespace ImageLabelTool.Classes
+namespace ImageLabelingTool.Classes
 {
 	public struct INDEX3 { public Int64 x, y, z; };
 	public struct SIZE3 { public Int64 w, h, d; }

@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef IMAGELABELTOOLCORE_EXPORTS
+#ifdef IMAGELABELINGTOOLCORE_EXPORTS
 #define CORE_FUNC_EXPORT extern "C" __declspec(dllexport)
 #endif
 

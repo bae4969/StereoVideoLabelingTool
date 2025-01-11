@@ -22,11 +22,11 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Xml;
-using ImageLabelTool.Classes;
+using ImageLabelingTool.Classes;
 using static System.Collections.Specialized.BitVector32;
 using Point = System.Windows.Point;
 
-namespace ImageLabelTool.Controls
+namespace ImageLabelingTool.Controls
 {
 	public enum DRAG_TYPE
 	{
@@ -36,7 +36,7 @@ namespace ImageLabelTool.Controls
 		BRUSH_LABEL,
 	}
 
-	public partial class ImageLabelViewer : ImageControlBase
+	public partial class ImageLabelingViewer : ImageControlBase
 	{
 		private readonly int[] __lab_color_map = new int[256];
 		private int[]? __top_view_data = null;
@@ -158,7 +158,7 @@ namespace ImageLabelTool.Controls
 
 		////////////////////////////////////////////////////////////////
 
-		public ImageLabelViewer() {
+		public ImageLabelingViewer() {
 			InitializeComponent();
 
 			Random random = new(4969);

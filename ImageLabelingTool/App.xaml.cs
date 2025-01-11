@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace ImageLabelTool
+namespace ImageLabelingTool
 {
     /// <summary>
     /// Interaction logic for App.xaml
