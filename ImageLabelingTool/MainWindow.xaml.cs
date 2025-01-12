@@ -53,7 +53,7 @@ namespace ImageLabelingTool
 
 				{
 					ImageLabelViewerControl.OnLoadImageInfo(__img_info, OnUpdateImageInfo);
-					LeftTopContainer.OnLoadImageInfo(__img_info, OnUpdateImageInfo);
+					//LeftTopContainer.OnLoadImageInfo(__img_info, OnUpdateImageInfo);
 					RightTopContainer.OnLoadImageInfo(__img_info, OnUpdateImageInfo);
 					RightBotContainer.OnLoadImageInfo(__img_info, OnUpdateImageInfo);
 				}
@@ -71,7 +71,7 @@ namespace ImageLabelingTool
 			try {
 				{
 					ImageLabelViewerControl.OnUnloadImageInfo();
-					LeftTopContainer.OnUnloadImageInfo();
+					//LeftTopContainer.OnUnloadImageInfo();
 					RightTopContainer.OnUnloadImageInfo();
 					RightBotContainer.OnUnloadImageInfo();
 				}
@@ -97,7 +97,7 @@ namespace ImageLabelingTool
 		}
 		public unsafe void OnUpdateImageInfo() {
 			ImageLabelViewerControl.OnUpdateImageInfo();
-			LeftTopContainer.OnUpdateImageInfo();
+			//LeftTopContainer.OnUpdateImageInfo();
 			RightTopContainer.OnUpdateImageInfo();
 			RightBotContainer.OnUpdateImageInfo();
 		}
