@@ -118,6 +118,14 @@ namespace ImageLabelingTool
 				Close();
 			}
 		}
+		private void Window_Loaded(object sender, RoutedEventArgs e) {
+			FileManagerControl.SetFileLoadFunc((img_path, lab_path) => {
+				OnUnloadImageInfo();
+				__img_filename = img_path??string.Empty;
+				__lab_filename = lab_path??string.Empty;
+				OnLoadImageInfo();
+			});
+		}
 		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 			Core.Release();
 		}
@@ -130,5 +138,6 @@ namespace ImageLabelingTool
 			OnUnloadImageInfo();
 			Keyboard.ClearFocus();
 		}
+
 	}
 }

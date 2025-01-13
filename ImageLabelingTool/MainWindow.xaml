@@ -9,6 +9,7 @@
         Title="MainWindow"
 		Height="900"
 		Width="1600"
+		Loaded="Window_Loaded"
 		Closing="Window_Closing"
 		>
 	<Grid>
@@ -52,6 +53,7 @@
 			</Grid>
 
 			<controls:FileManager
+				x:Name="FileManagerControl"
 				Margin="5"
 				Padding="5"
 				Grid.Row="0"

@@ -24,9 +24,17 @@ namespace ImageLabelingTool.Controls
 {
 	public partial class FileManager : UserControl
 	{
-		public ObservableCollection<string> __file_names { get; set; } = [];
-		public string __base_path { get; set; } = string.Empty;
+		public ObservableCollection<TupleStringType> __file_names { get; set; } = [];
+		private string __base_path { get; set; } = string.Empty;
+		private Action<string?, string?>? __file_load_func = null;
 
+		////////////////////////////////////////////////////////////////
+
+		public void SetFileLoadFunc(Action<string?, string?> func) {
+			__file_load_func = func;
+		}
+
+		////////////////////////////////////////////////////////////////
 
 		public FileManager() {
 			InitializeComponent();
@@ -39,19 +47,31 @@ namespace ImageLabelingTool.Controls
 			LoadTree(__base_path, FileExplorer.Items);
 		}
 
-		private void FileList_ContextMenuOpening(object sender, ContextMenuEventArgs e) {
-			//var contextMenu = new ContextMenu();
+		private void FileList_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+			var listBox = sender as ListBox;
+			var clickedItem = listBox?.InputHitTest(e.GetPosition(FileList)) as FrameworkElement;
+			if (clickedItem?.DataContext is not TupleStringType item) return;
 
-			//var loadMenuItem = new MenuItem { Header = "로드" };
-			//loadMenuItem.Click += (s, args) => LoadFile(((ListBox)sender).SelectedItem as string);
+			FileList.SelectedItem = item;
+			ListBoxContextMenu.IsOpen = true;
+		}
+		private void FileList_LoadMenuItem_Click(object sender, RoutedEventArgs e) {
+			if (FileList.SelectedItem is not TupleStringType item) return;
 
-			//var removeMenuItem = new MenuItem { Header = "목록에서 제외하기" };
-			//removeMenuItem.Click += (s, args) => __file_names.Remove(((ListBox)sender).SelectedItem as string);
+			if(__file_load_func == null) {
+				Logger.Print(LOG_TYPE.ERROR, $"Fail to load image file [ __file_load_func is null ]");
+				MessageBox.Show("이미지 파일을 로드할 수 없습니다.", "이미지 로드", MessageBoxButton.OK);
+				return;
+			}
 
-			//contextMenu.Items.Add(loadMenuItem);
-			//contextMenu.Items.Add(removeMenuItem);
-
-			//((ListBox)sender).ContextMenu = contextMenu;
+			var img_file_path = __file_names.FirstOrDefault(x => x.Outter == item.Outter)?.Inner;
+			var ext = Path.GetExtension(img_file_path);
+			var lab_file_path = img_file_path?.Replace($".image{ext}", $".label{ext}");
+			__file_load_func(img_file_path, lab_file_path);
+		}
+		private void FileList_DeleteMenuItem_Click(object sender, RoutedEventArgs e) {
+			if (FileList.SelectedItem is not TupleStringType item) return;
+			__file_names.RemoveAt(__file_names.IndexOf(__file_names.FirstOrDefault(x => x.Outter == item.Outter)));
 		}
 
 		private void ChangeBasePathButton_Click(object sender, RoutedEventArgs e) {
@@ -83,11 +103,14 @@ namespace ImageLabelingTool.Controls
 			try {
 				if (e.ChangedButton != MouseButton.Left ||
 					sender is not TreeViewItem item ||
+					item.Header is not string file_name ||
 					item.Tag is not string file_path ||
 					file_path == null)
 					return;
 
-				if (__file_names.Contains(file_path)) {
+				var t_item = new TupleStringType() { Outter = file_name, Inner = file_path };
+
+				if (__file_names.Contains(t_item)) {
 					MessageBox.Show("이미 추가된 파일입니다.", "파일 추가", MessageBoxButton.OK);
 					return;
 				}
@@ -95,7 +118,7 @@ namespace ImageLabelingTool.Controls
 				var result = MessageBox.Show("추가하시겠습니까?", "파일 추가", MessageBoxButton.YesNo);
 				if (result != MessageBoxResult.Yes) return;
 
-				__file_names.Add(file_path);
+				__file_names.Add(t_item);
 			}
 			catch (Exception ex) {
 				Logger.Print(LOG_TYPE.ERROR, $"Fail to process 'MouseDoubleClick' event for 'FileExplorer' control [ {ex.Message} ]");
@@ -129,11 +152,11 @@ namespace ImageLabelingTool.Controls
 				foreach (var file in Directory.GetFiles(dir_path)) {
 					var file_info = new FileInfo(file);
 					if (!(
-							file_info.Extension.Equals(".MHD", StringComparison.CurrentCultureIgnoreCase) ||
-							file_info.Extension.Equals(".RAW", StringComparison.CurrentCultureIgnoreCase) ||
-							file_info.Extension.Equals(".PNG", StringComparison.CurrentCultureIgnoreCase) ||
-							file_info.Extension.Equals(".TIF", StringComparison.CurrentCultureIgnoreCase) ||
-							file_info.Extension.Equals(".TIFF", StringComparison.CurrentCultureIgnoreCase)
+							file_info.Name.ToUpper().EndsWith(".IMAGE.MHD") ||
+							file_info.Name.ToUpper().EndsWith(".IMAGE.RAW") ||
+							file_info.Name.ToUpper().EndsWith(".IMAGE.PNG") ||
+							file_info.Name.ToUpper().EndsWith(".IMAGE.TIF") ||
+							file_info.Name.ToUpper().EndsWith(".IMAGE.TIFF")
 						) ||
 						file_info.Name[0] == '.')
 						continue;

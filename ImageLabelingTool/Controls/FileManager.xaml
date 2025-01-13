@@ -16,12 +16,22 @@
 		</Grid.RowDefinitions>
 
 		<!-- 파일 리스트 -->
-		<ListBox Grid.Row="0" x:Name="FileList" Margin="5" Padding="5" BorderThickness="1" ItemsSource="{Binding __file_names}">
-			<ListBox.ItemTemplate>
-				<DataTemplate>
-					<Button Content="{Binding}" ContextMenuOpening="FileList_ContextMenuOpening" />
-				</DataTemplate>
-			</ListBox.ItemTemplate>
+		<ListBox
+			x:Name="FileList" 
+			Grid.Row="0"
+			Margin="5" 
+			BorderThickness="1" 
+			ItemsSource="{Binding __file_names}" 
+			DisplayMemberPath="Outter"
+			MouseRightButtonUp="FileList_MouseRightButtonUp"
+			>
+			
+			<ListBox.ContextMenu>
+				<ContextMenu x:Name="ListBoxContextMenu">
+					<MenuItem Header="로드" Click="FileList_LoadMenuItem_Click" />
+					<MenuItem Header="삭제" Click="FileList_DeleteMenuItem_Click" />
+				</ContextMenu>
+			</ListBox.ContextMenu>
 		</ListBox>
 
 		<GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0,5,0,5"/>
@@ -54,6 +64,7 @@
 				FontSize="16"
 				FontWeight="Bold"
 				Margin="5"
+				Padding="10,0,0,0"
 				HorizontalAlignment="Stretch"
 				VerticalAlignment="Center"
 				/>
@@ -63,7 +74,7 @@
 				Grid.Row="0"
 				Grid.Column="1"
 				Content="..."
-				Margin="5"
+				Margin="0,5,5,5"
 				HorizontalAlignment="Center"
 				VerticalAlignment="Center"
 				Click="ChangeBasePathButton_Click"
