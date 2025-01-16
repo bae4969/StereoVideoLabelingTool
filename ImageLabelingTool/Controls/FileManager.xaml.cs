@@ -22,16 +22,78 @@ using System.ComponentModel;
 
 namespace ImageLabelingTool.Controls
 {
-	public partial class FileManager : UserControl
+	public partial class FileManager : UserControl, INotifyPropertyChanged
 	{
-		public ObservableCollection<TupleStringType> __file_names { get; set; } = [];
+		public event PropertyChangedEventHandler? PropertyChanged;
+		public void OnPropertyChanged(string? name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
 		private string __base_path { get; set; } = string.Empty;
-		private Action<string?, string?>? __file_load_func = null;
+		public string BasePath
+		{
+			get => __base_path;
+			set { __base_path = value; OnPropertyChanged(null); }
+		}
+
+		public Action<string?, string?>? LoadFileCallbackFunc = null;
 
 		////////////////////////////////////////////////////////////////
 
-		public void SetFileLoadFunc(Action<string?, string?> func) {
-			__file_load_func = func;
+		private void LoadTree(string? dir_path, ItemCollection base_items) {
+			if (string.IsNullOrEmpty(dir_path) || !Directory.Exists(dir_path)) return;
+			try {
+				base_items.Clear();
+
+				foreach (var directory in Directory.GetDirectories(dir_path)) {
+					var dir_info = new DirectoryInfo(directory);
+					if (dir_info.Name.Equals("$RECYCLE.BIN", StringComparison.CurrentCultureIgnoreCase) ||
+						dir_info.Name.Equals("SYSTEM VOLUME INFOMATION", StringComparison.CurrentCultureIgnoreCase) ||
+						dir_info.Name[0] == '.')
+						continue;
+
+					var subItem = new TreeViewItem {
+						Header = dir_info.Name,
+						Tag = dir_info.FullName,
+					};
+
+					subItem.Items.Add(null);
+					subItem.Expanded += FileExplorer_Folder_Expanded;
+
+					base_items.Add(subItem);
+				}
+
+				foreach (var file in Directory.GetFiles(dir_path)) {
+					var file_info = new FileInfo(file);
+
+					var t_filename = Path.GetFileNameWithoutExtension(file_info.FullName);
+					var ext_1 = Path.GetExtension(t_filename);
+					var ext_2 = Path.GetExtension(file_info.FullName);
+					if (!ext_1.ToLower().EndsWith(".image") ||
+						!(
+							ext_2.ToLower().EndsWith(".mhd") ||
+							ext_2.ToLower().EndsWith(".raw") ||
+							ext_2.ToLower().EndsWith(".png") ||
+							ext_2.ToLower().EndsWith(".tif") ||
+							ext_2.ToLower().EndsWith(".tiff")
+						) ||
+						file_info.Name[0] == '.')
+						continue;
+
+					var img_filename = file_info.FullName;
+					var lab_filename = img_filename.Replace(".image", ".label");
+					if (!File.Exists(lab_filename)) lab_filename = string.Empty;
+
+					var subItem = new TreeViewItem {
+						Header = file_info.Name,
+						Background = new SolidColorBrush(string.IsNullOrEmpty(lab_filename) ? Color.FromRgb(0x2F, 0x1F, 0x1F) : Color.FromRgb(0x1F, 0x2F, 0x1F)),
+						Tag = new Tuple<string, string>(img_filename, lab_filename)
+					};
+
+					base_items.Add(subItem);
+				}
+			}
+			catch (Exception ex) {
+				Logger.Print(LOG_TYPE.ERROR, $"Fail to load 'TreeViewState' [ {ex.Message} ]");
+			}
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -42,48 +104,21 @@ namespace ImageLabelingTool.Controls
 		}
 		private void UserControl_Loaded(object sender, RoutedEventArgs e) {
 			SettingManager.GetSetting("FileExplorerBasePath", out string? t_base_path);
-			BasePathTextBlock.Text = __base_path = t_base_path??string.Empty;
+			BasePath = t_base_path??string.Empty;
 
 			LoadTree(__base_path, FileExplorer.Items);
 		}
 
-		private void FileList_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
-			var listBox = sender as ListBox;
-			var clickedItem = listBox?.InputHitTest(e.GetPosition(FileList)) as FrameworkElement;
-			if (clickedItem?.DataContext is not TupleStringType item) return;
-
-			FileList.SelectedItem = item;
-			ListBoxContextMenu.IsOpen = true;
-		}
-		private void FileList_LoadMenuItem_Click(object sender, RoutedEventArgs e) {
-			if (FileList.SelectedItem is not TupleStringType item) return;
-
-			if(__file_load_func == null) {
-				Logger.Print(LOG_TYPE.ERROR, $"Fail to load image file [ __file_load_func is null ]");
-				MessageBox.Show("이미지 파일을 로드할 수 없습니다.", "이미지 로드", MessageBoxButton.OK);
-				return;
-			}
-
-			var img_file_path = __file_names.FirstOrDefault(x => x.Outter == item.Outter)?.Inner;
-			var ext = Path.GetExtension(img_file_path);
-			var lab_file_path = img_file_path?.Replace($".image{ext}", $".label{ext}");
-			__file_load_func(img_file_path, lab_file_path);
-		}
-		private void FileList_DeleteMenuItem_Click(object sender, RoutedEventArgs e) {
-			if (FileList.SelectedItem is not TupleStringType item) return;
-			__file_names.RemoveAt(__file_names.IndexOf(__file_names.FirstOrDefault(x => x.Outter == item.Outter)));
-		}
-
 		private void ChangeBasePathButton_Click(object sender, RoutedEventArgs e) {
 			var dialog = new OpenFileDialog {
-				Filter = "폴더|*.none",
+				Filter = "Folder|*.none",
 				InitialDirectory = __base_path,
 				CheckFileExists = false,
 				CheckPathExists = true,
-				FileName = "폴더 선택"
+				FileName = "Select folder"
 			};
 			if (dialog.ShowDialog() != true) return;
-			BasePathTextBlock.Text = __base_path = Path.GetDirectoryName(dialog.FileName);
+			BasePath = Path.GetDirectoryName(dialog.FileName);
 			SettingManager.SetSetting("FileExplorerBasePath", __base_path);
 			LoadTree(__base_path, FileExplorer.Items);
 		}
@@ -99,81 +134,26 @@ namespace ImageLabelingTool.Controls
 				Logger.Print(LOG_TYPE.ERROR, $"Fail to process 'FolderExpanded' event for 'FileExplorer' control [ {ex.Message} ]");
 			}
 		}
-		private void FileExplorer_File_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-			try {
-				if (e.ChangedButton != MouseButton.Left ||
-					sender is not TreeViewItem item ||
-					item.Header is not string file_name ||
-					item.Tag is not string file_path ||
-					file_path == null)
-					return;
+		private void FileExplorer_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+			var clickedElement = e.OriginalSource as DependencyObject;
+			while (clickedElement != null && clickedElement is not TreeViewItem)
+				clickedElement = VisualTreeHelper.GetParent(clickedElement);
 
-				var t_item = new TupleStringType() { Outter = file_name, Inner = file_path };
-
-				if (__file_names.Contains(t_item)) {
-					MessageBox.Show("이미 추가된 파일입니다.", "파일 추가", MessageBoxButton.OK);
-					return;
-				}
-
-				var result = MessageBox.Show("추가하시겠습니까?", "파일 추가", MessageBoxButton.YesNo);
-				if (result != MessageBoxResult.Yes) return;
-
-				__file_names.Add(t_item);
-			}
-			catch (Exception ex) {
-				Logger.Print(LOG_TYPE.ERROR, $"Fail to process 'MouseDoubleClick' event for 'FileExplorer' control [ {ex.Message} ]");
-			}
+			if (clickedElement is not TreeViewItem tree_view_item) return;
+			tree_view_item.IsSelected = true;
 		}
+		private void FileExplorer_LoadMenuItem_Click(object sender, RoutedEventArgs e) {
+			if (FileExplorer.SelectedItem is not TreeViewItem tree_view_item ||
+				tree_view_item.Tag  is not Tuple<string, string> img_file_path)
+				return;
 
-
-		private void LoadTree(string? dir_path, ItemCollection base_items) {
-			try {
-				base_items.Clear();
-				if(string.IsNullOrEmpty(dir_path) || !Directory.Exists(dir_path)) return;
-
-				foreach (var directory in Directory.GetDirectories(dir_path)) {
-					var dir_info = new DirectoryInfo(directory);
-					if (dir_info.Name.Equals("$RECYCLE.BIN", StringComparison.CurrentCultureIgnoreCase) ||
-						dir_info.Name.Equals("SYSTEM VOLUME INFOMATION", StringComparison.CurrentCultureIgnoreCase) ||
-						dir_info.Name[0] == '.')
-						continue;
-
-					var subItem = new TreeViewItem {
-						Header = dir_info.Name,
-						Tag = directory
-					};
-
-					subItem.Items.Add(null);
-					subItem.Expanded += FileExplorer_Folder_Expanded;
-
-					base_items.Add(subItem);
-				}
-
-				foreach (var file in Directory.GetFiles(dir_path)) {
-					var file_info = new FileInfo(file);
-					if (!(
-							file_info.Name.ToUpper().EndsWith(".IMAGE.MHD") ||
-							file_info.Name.ToUpper().EndsWith(".IMAGE.RAW") ||
-							file_info.Name.ToUpper().EndsWith(".IMAGE.PNG") ||
-							file_info.Name.ToUpper().EndsWith(".IMAGE.TIF") ||
-							file_info.Name.ToUpper().EndsWith(".IMAGE.TIFF")
-						) ||
-						file_info.Name[0] == '.')
-						continue;
-
-					var subItem = new TreeViewItem {
-						Header = file_info.Name,
-						Tag = file
-					};
-
-					subItem.MouseDoubleClick += FileExplorer_File_MouseDoubleClick;
-
-					base_items.Add(subItem);
-				}
+			if (LoadFileCallbackFunc == null) {
+				Logger.Print(LOG_TYPE.ERROR, $"Fail to load image file [ __file_load_func is null ]");
+				MessageBox.Show("Fail to load image file", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+				return;
 			}
-			catch (Exception ex) {
-				Logger.Print(LOG_TYPE.ERROR, $"Fail to load 'TreeViewState' [ {ex.Message} ]");
-			}
+
+			LoadFileCallbackFunc(img_file_path.Item1, img_file_path.Item2);
 		}
 	}
 }

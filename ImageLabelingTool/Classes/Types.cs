@@ -6,9 +6,14 @@ using System.Threading.Tasks;
 
 namespace ImageLabelingTool.Classes
 {
-	public class TupleStringType
+	public struct StringPairType
 	{
-		public string Outter { get; set; } = string.Empty;
-		public string Inner { get; set; } = string.Empty;
+		public string Outter { get; set; }
+		public object Inner { get; set; }
+
+		public StringPairType() {
+			Outter = string.Empty;
+			Inner = string.Empty;
+		}
 	}
 }

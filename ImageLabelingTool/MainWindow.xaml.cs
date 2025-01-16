@@ -24,6 +24,12 @@ namespace ImageLabelingTool
 
 		////////////////////////////////////////////////////////////////
 
+		public void LoadFile(string? img_path, string? lab_path) {
+			OnUnloadImageInfo();
+			__img_filename = img_path??string.Empty;
+			__lab_filename = lab_path??string.Empty;
+			OnLoadImageInfo();
+		}
 		public unsafe bool OnLoadImageInfo() {
 			try {
 				if (Core.LoadData(__img_filename, __lab_filename) < 0)
@@ -103,9 +109,10 @@ namespace ImageLabelingTool
 		}
 
 		////////////////////////////////////////////////////////////////
-		
+
 		public MainWindow() {
 			InitializeComponent();
+			FileManagerControl.LoadFileCallbackFunc = LoadFile;
 
 			try {
 				string before_path_env = Environment.GetEnvironmentVariable("Path")??"";
@@ -119,12 +126,6 @@ namespace ImageLabelingTool
 			}
 		}
 		private void Window_Loaded(object sender, RoutedEventArgs e) {
-			FileManagerControl.SetFileLoadFunc((img_path, lab_path) => {
-				OnUnloadImageInfo();
-				__img_filename = img_path??string.Empty;
-				__lab_filename = lab_path??string.Empty;
-				OnLoadImageInfo();
-			});
 		}
 		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 			Core.Release();
@@ -139,5 +140,26 @@ namespace ImageLabelingTool
 			Keyboard.ClearFocus();
 		}
 
+		private void MenuItem_Click(object sender, RoutedEventArgs e) {
+			if (sender is not MenuItem item) return;
+
+			switch (item.Tag) {
+				case "Load": break;
+				case "Save": break;
+				case "Exit":
+					if (MessageBox.Show(
+						"Do you want to exit?",
+						"Exit",
+						MessageBoxButton.YesNo,
+						MessageBoxImage.Question
+						) == MessageBoxResult.Yes)
+						Close();
+					break;
+				case "Preferences": break;
+				case "Test1": break;
+				case "Test2": break;
+				default: return;
+			}
+		}
 	}
 }

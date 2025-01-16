@@ -23,12 +23,18 @@
 
 		<!-- 상단 메뉴바 -->
 		<Menu Grid.Row="0">
-			<MenuItem Header="파일(_F)" FontSize="16" FontWeight="Bold">
-				<MenuItem Header="불러오기(_L)" FontSize="16" FontWeight="Bold"/>
-				<MenuItem Header="저장하기(_S)" FontSize="16" FontWeight="Bold"/>
+			<MenuItem Header="_File">
+				<MenuItem Header="_Load" Tag="Load" Click="MenuItem_Click"/>
+				<MenuItem Header="_Save" Tag="Save" Click="MenuItem_Click"/>
+				<Separator />
+				<MenuItem Header="_Exit" Tag="Exit" Click="MenuItem_Click"/>
 			</MenuItem>
-			<MenuItem Header="설정(_S)" FontSize="16" FontWeight="Bold">
-				<MenuItem Header="경로지정(_L)" FontSize="16" FontWeight="Bold"/>
+			<MenuItem Header="_Settings">
+				<MenuItem Header="_Preferences" Tag="Preferences" Click="MenuItem_Click"/>
+			</MenuItem>
+			<MenuItem Header="_Develop">
+				<MenuItem Header="_Test 1" Tag="Test1" Click="MenuItem_Click"/>
+				<MenuItem Header="_Test 2" Tag="Test2" Click="MenuItem_Click"/>
 			</MenuItem>
 		</Menu>
 
