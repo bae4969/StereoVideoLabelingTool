@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using System.Xml;
 using ImageLabelingTool.Classes;
 
-namespace ImageLabelingTool.Controls
+namespace ImageLabelingTool.Controls.Image
 {
 	public enum IMG_TYPE
 	{

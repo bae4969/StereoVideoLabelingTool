@@ -26,7 +26,7 @@ using ImageLabelingTool.Classes;
 using static System.Collections.Specialized.BitVector32;
 using Point = System.Windows.Point;
 
-namespace ImageLabelingTool.Controls
+namespace ImageLabelingTool.Controls.Image
 {
 	public enum DRAG_TYPE
 	{
@@ -36,7 +36,7 @@ namespace ImageLabelingTool.Controls
 		BRUSH_LABEL,
 	}
 
-	public partial class ImageLabelingViewer : ImageControlBase
+	public partial class LabelingViewer : ImageControlBase
 	{
 		private readonly int[] __lab_color_map = new int[256];
 		private int[]? __top_view_data = null;
@@ -98,6 +98,7 @@ namespace ImageLabelingTool.Controls
 					TopViewImage.Source = __top_view_bitmap;
 					SideViewImage.Source = __side_view_bitmap;
 					DepthScrollBar.Maximum = __img_info.ImgSize.d - 1;
+					DepthScrollBar.ViewportSize = __img_info.ImgSize.d / 10;
 					DepthScrollBar.Value = 0;
 					DepthScrollBar.Value = __img_info.ImgSize.d / 2;
 
@@ -158,7 +159,7 @@ namespace ImageLabelingTool.Controls
 
 		////////////////////////////////////////////////////////////////
 
-		public ImageLabelingViewer() {
+		public LabelingViewer() {
 			InitializeComponent();
 
 			Random random = new(4969);

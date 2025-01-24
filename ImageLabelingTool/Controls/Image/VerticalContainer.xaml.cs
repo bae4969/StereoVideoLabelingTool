@@ -16,15 +16,15 @@ using System.Windows.Shapes;
 using System.Xml;
 using ImageLabelingTool.Classes;
 
-namespace ImageLabelingTool.Controls
+namespace ImageLabelingTool.Controls.Image
 {
-    public partial class VerticalImageControlContainer : ImageControlBase
+    public partial class VerticalContainer : ImageControlBase
 	{
 		public static readonly DependencyProperty ItemsProperty =
 			DependencyProperty.Register(
 				"Items",
 				typeof(ObservableCollection<object>),
-				typeof(VerticalImageControlContainer),
+				typeof(VerticalContainer),
 				new PropertyMetadata(null)
 			);
 
@@ -69,7 +69,7 @@ namespace ImageLabelingTool.Controls
 
 		////////////////////////////////////////////////////////////////
 
-		public VerticalImageControlContainer()
+		public VerticalContainer()
         {
             InitializeComponent();
 			Items = [];

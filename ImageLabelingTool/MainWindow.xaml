@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ImageLabelingTool"
         xmlns:controls="clr-namespace:ImageLabelingTool.Controls"
+        xmlns:imageControls="clr-namespace:ImageLabelingTool.Controls.Image"
         mc:Ignorable="d"
         Title="MainWindow"
 		Height="900"
@@ -93,7 +94,7 @@
 			<GridSplitter Grid.Column="1" Width="5" Margin="5,0,5,0" HorizontalAlignment="Stretch" />
 
 			<!-- 중앙 패널 -->
-			<controls:ImageLabelingViewer x:Name="ImageLabelViewerControl" Grid.Column="2"  BorderThickness="1"/>
+			<imageControls:LabelingViewer x:Name="ImageLabelViewerControl" Grid.Column="2"  BorderThickness="1"/>
 
 			<GridSplitter Grid.Column="3" Width="5" Margin="5,0,5,0" HorizontalAlignment="Stretch" />
 
@@ -106,33 +107,33 @@
 				</Grid.RowDefinitions>
 
 				<!-- 우측 상단 패널 -->
-				<controls:VerticalImageControlContainer
+				<imageControls:VerticalContainer
 					x:Name="RightTopContainer"
 					Margin="5"
 					Padding="5"
 					Grid.Row="0"
 					>
 
-					<controls:VerticalImageControlContainer.Items>
-						<controls:ImageLutController/>
-					</controls:VerticalImageControlContainer.Items>
-				</controls:VerticalImageControlContainer>
+					<imageControls:VerticalContainer.Items>
+						<imageControls:LutControl/>
+					</imageControls:VerticalContainer.Items>
+				</imageControls:VerticalContainer>
 
 				<GridSplitter Grid.Row="1" Height="5" Margin="0,5,0,5" HorizontalAlignment="Stretch" />
 
 				<!-- 우측 하단 패널 -->
-				<controls:VerticalImageControlContainer
+				<imageControls:VerticalContainer
 					x:Name="RightBotContainer"
 					Margin="5"
 					Padding="5"
 					Grid.Row="2"
 					>
 
-					<controls:VerticalImageControlContainer.Items>
+					<imageControls:VerticalContainer.Items>
 						<TextBox Text="asd"/>
 						<TextBox Text="asd"/>
-					</controls:VerticalImageControlContainer.Items>
-				</controls:VerticalImageControlContainer>
+					</imageControls:VerticalContainer.Items>
+				</imageControls:VerticalContainer>
 			</Grid>
 		</Grid>
 

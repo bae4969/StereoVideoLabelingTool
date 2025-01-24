@@ -15,9 +15,9 @@ using System.Windows.Shapes;
 using System.Xml;
 using ImageLabelingTool.Classes;
 
-namespace ImageLabelingTool.Controls
+namespace ImageLabelingTool.Controls.Image
 {
-	public partial class ImageLutController : ImageControlBase
+	public partial class LutControl : ImageControlBase
 	{
 		public override unsafe void OnLoadImageInfo(ImageInfoType img_info, Action on_update_image_info) {
 			base.SetImageInfo(img_info, on_update_image_info);
@@ -91,7 +91,7 @@ namespace ImageLabelingTool.Controls
 
 		////////////////////////////////////////////////////////////////
 
-		public ImageLutController() {
+		public LutControl() {
 			InitializeComponent();
 		}
 		private void RegistValueChangeEvent() {

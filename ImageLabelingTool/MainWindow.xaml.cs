@@ -12,6 +12,7 @@ using System.Windows.Shapes;
 using System.Xml;
 using ImageLabelingTool.Classes;
 using ImageLabelingTool.Controls;
+using ImageLabelingTool.Controls.Image;
 
 
 namespace ImageLabelingTool
