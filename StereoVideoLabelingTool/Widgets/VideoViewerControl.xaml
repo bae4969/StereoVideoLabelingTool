@@ -1,0 +1,159 @@
+﻿<local:StereoVideoControlBase
+	x:Class="StereoVideoLabelingTool.Widgets.VideoViewerControl"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+	xmlns:local="clr-namespace:StereoVideoLabelingTool.Widgets"
+	mc:Ignorable="d" 
+	d:DesignHeight="600"
+	d:DesignWidth="600"
+	SizeChanged="ImageControlBase_SizeChanged"
+	>
+
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="20"/>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition x:Name="TopViewGridRow" Height="3*"/>
+			<RowDefinition x:Name="SideViewGridRow" Height="1*"/>
+		</Grid.RowDefinitions>
+
+
+		<!-- 이미지 도구 -->
+		<Menu
+			Grid.ColumnSpan="2"
+			>
+
+			<MenuItem
+				Header="Label"
+				FontSize="13"
+				>
+
+				<MenuItem Header="Brush Style">
+					<ListBox SelectionMode="Single">
+						<ListBoxItem>
+							<CheckBox Content="항목 1" IsChecked="False"/>
+						</ListBoxItem>
+						<ListBoxItem>
+							<CheckBox Content="항목 2" IsChecked="False"/>
+						</ListBoxItem>
+						<ListBoxItem>
+							<CheckBox Content="항목 3" IsChecked="False"/>
+						</ListBoxItem>
+					</ListBox>
+					<MenuItem Header="Ellipse"/>
+					<MenuItem Header="Rectangle"/>
+				</MenuItem>
+
+				<MenuItem Header="Label">
+					<CheckBox Content="0"/>
+					<CheckBox Content="1"/>
+					<CheckBox Content="2"/>
+					<CheckBox Content="3"/>
+					<CheckBox Content="4"/>
+					<CheckBox Content="5"/>
+					<CheckBox Content="6"/>
+					<CheckBox Content="7"/>
+				</MenuItem>
+
+			</MenuItem>
+			<MenuItem Header="Region" FontSize="13"/>
+			<MenuItem Header="설정" FontSize="13"/>
+		</Menu>
+
+		<Canvas
+			x:Name="TopViewCanvas"
+			Grid.Column="0"
+			Grid.Row="1"
+			Background="#202020"
+			ClipToBounds="True"
+			MouseWheel="ViewCanvas_MouseWheel"
+			MouseDown="ViewCanvas_MouseDown"
+			MouseMove="ViewCanvas_MouseMove"
+			MouseUp="ViewCanvas_MouseUp"
+			>
+			<Image
+				x:Name="TopViewImage"
+				Stretch="None"
+				>
+
+				<Image.RenderTransform>
+					<TransformGroup x:Name="TopViewTransformGroup">
+						<ScaleTransform x:Name="TopViewScale" ScaleX="1.0" ScaleY="1.0" CenterX="0" CenterY="0"/>
+						<TranslateTransform x:Name="TopViewTranslate" X="0" Y="0"/>
+						<RotateTransform x:Name="TopViewRotation" Angle="0"/>
+					</TransformGroup>
+				</Image.RenderTransform>
+			</Image>
+
+			<Line
+				x:Name="HorizontalLine"
+				Visibility="Collapsed"
+				Stroke="Yellow"
+				StrokeThickness="1"
+				>
+
+			</Line>
+
+			<Line
+				x:Name="VerticalLine"
+				Visibility="Collapsed"
+				Stroke="Yellow"
+				StrokeThickness="1"
+				>
+
+			</Line>
+
+		</Canvas>
+
+		<Canvas
+			x:Name="SideViewCanvas"
+			Grid.Column="0"
+			Grid.Row="2"
+			Background="#202020"
+			ClipToBounds="True"
+			MouseWheel="ViewCanvas_MouseWheel"
+			MouseDown="ViewCanvas_MouseDown"
+			MouseMove="ViewCanvas_MouseMove"
+			MouseUp="ViewCanvas_MouseUp"
+			>
+
+			<Image
+				x:Name="SideViewImage"
+				Stretch="None"
+				>
+
+				<Image.RenderTransform>
+					<TransformGroup x:Name="SideViewTransformGroup">
+						<ScaleTransform x:Name="SideViewScale" ScaleX="1.0" ScaleY="1.0" CenterX="0" CenterY="0"/>
+						<TranslateTransform x:Name="SideViewTranslate" X="0" Y="0" />
+					</TransformGroup>
+				</Image.RenderTransform>
+			</Image>
+
+			<Line
+				x:Name="DepthLine"
+				Visibility="Collapsed"
+				Stroke="Yellow"
+				StrokeThickness="1"
+				>
+
+			</Line>
+		</Canvas>
+
+		<ScrollBar
+			x:Name="DepthScrollBar"
+			Grid.Column="1"
+			Grid.Row="1"
+			Grid.RowSpan="2"
+			Minimum="0"
+			Value="0"
+			Maximum="0"
+			ValueChanged="DepthScrollBar_ValueChanged"
+			/>
+	</Grid>
+</local:StereoVideoControlBase>

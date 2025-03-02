@@ -1,0 +1,37 @@
+﻿<UserControl
+	x:Class="StereoVideoLabelingTool.Controls.ListSelectionControl"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+	xmlns:local="clr-namespace:StereoVideoLabelingTool.Controls"
+	mc:Ignorable="d"
+	d:Width="200">
+
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto"/>
+			<ColumnDefinition Width="3*"/>
+			<ColumnDefinition Width="Auto"/>
+		</Grid.ColumnDefinitions>
+
+		<TextBlock
+			x:Name="HeaderTextBlock"
+			Grid.Column="0"
+			Margin="0,5,0,0"
+			TextAlignment="Center"
+			Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
+			Text="{Binding ControlName, RelativeSource={RelativeSource AncestorType=UserControl}}"
+			Width="{Binding ControlNameWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"
+			/>
+		
+		<ComboBox
+			x:Name="ItemListBox"
+			Grid.Column="1"
+			Margin="8,0,0,0"
+			Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
+			ItemsSource="{Binding Items, RelativeSource={RelativeSource AncestorType=UserControl}}"
+			SelectionChanged="ItemListBox_SelectionChanged"
+			/>
+	</Grid>
+</UserControl>

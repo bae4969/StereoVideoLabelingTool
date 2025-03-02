@@ -1,0 +1,106 @@
+﻿<Window
+    x:Class="StereoVideoLabelingTool.Windows.PreferencesWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:controls="clr-namespace:StereoVideoLabelingTool.Controls"
+	xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    Title="Preferences"
+	Height="400"
+	Width="500"
+	WindowStartupLocation="CenterOwner"
+	ResizeMode="NoResize"
+	Loaded="Window_Loaded"
+    >
+
+	<Grid Margin="50,35,50,35">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="40"/>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="*"/>
+		</Grid.ColumnDefinitions>
+		
+		
+		<StackPanel
+			x:Name="SettingStackPanel"
+			Grid.Row="0"
+			Grid.Column="0"
+			Grid.ColumnSpan="2"
+			>
+
+			<controls:PathSelectionControl
+				x:Name="SourceBasePathSelectionControl"
+				Margin="0,0,0,10"
+				ControlName="Source Path"
+				ControlNameWidth="110"
+				FontSize="12"
+				SelectionMode="OEPN_FOLDER"
+				/>
+
+			<controls:ListSelectionControl
+				x:Name="MajorThemeSelectionControl"
+				Margin="0,0,35,10"
+				ControlName="Major Theme"
+				ControlNameWidth="110"
+				FontSize="12"
+				>
+
+				<controls:ListSelectionControl.Items>
+					<sys:String>Light</sys:String>
+					<sys:String>Dark</sys:String>
+				</controls:ListSelectionControl.Items>
+			</controls:ListSelectionControl>
+
+			<controls:ListSelectionControl
+				x:Name="MinorThemeSelectionControl"
+				Margin="0,0,35,10"
+				ControlName="Minor Theme"
+				ControlNameWidth="110"
+				FontSize="12"
+				>
+
+				<controls:ListSelectionControl.Items>
+					<sys:String>Blue</sys:String>
+					<sys:String>Red</sys:String>
+					<sys:String>Green</sys:String>
+					<sys:String>Orange</sys:String>
+					<sys:String>Purple</sys:String>
+					<sys:String>Mauve</sys:String>
+					<sys:String>Cobalt</sys:String>
+					<sys:String>Emerald</sys:String>
+					<sys:String>Lime</sys:String>
+					<sys:String>Olive</sys:String>
+					<sys:String>Teal</sys:String>
+					<sys:String>Cyan</sys:String>
+					<sys:String>Magenta</sys:String>
+					<sys:String>Pink</sys:String>
+					<sys:String>Brown</sys:String>
+					<sys:String>Crimson</sys:String>
+					<sys:String>Yellow</sys:String>
+					<sys:String>Taupe</sys:String>
+					<sys:String>Steel</sys:String>
+				</controls:ListSelectionControl.Items>
+			</controls:ListSelectionControl>
+			
+		</StackPanel>
+
+		<Button
+			Content="Confirm"
+			Margin="80,10,15,0"
+			Grid.Row="1"
+			Grid.Column="0"
+			Click="ConfirmButton_Click"
+			/>
+
+		<Button
+			Content="Cancel"
+			Margin="15,10,80,0"
+			Grid.Row="1"
+			Grid.Column="1"
+			Click="CancelButton_Click"
+			/>
+
+	</Grid>
+</Window>
