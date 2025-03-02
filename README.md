@@ -1,1 +1,1 @@
-# ImageLabelingTool
+# StereoVideoLabelingTool
