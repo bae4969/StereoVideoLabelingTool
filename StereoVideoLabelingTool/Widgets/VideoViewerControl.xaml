@@ -6,25 +6,27 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 	xmlns:local="clr-namespace:StereoVideoLabelingTool.Widgets"
 	mc:Ignorable="d" 
-	d:DesignHeight="600"
-	d:DesignWidth="600"
+	d:DesignHeight="400"
+	d:DesignWidth="800"
 	SizeChanged="ImageControlBase_SizeChanged"
 	>
 
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*"/>
-			<ColumnDefinition Width="20"/>
+			<ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
-			<RowDefinition x:Name="TopViewGridRow" Height="3*"/>
-			<RowDefinition x:Name="SideViewGridRow" Height="1*"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="20"/>
 		</Grid.RowDefinitions>
 
 
 		<!-- 이미지 도구 -->
 		<Menu
+			Grid.Row="0"
+			Grid.Column="0"
 			Grid.ColumnSpan="2"
 			>
 
@@ -66,7 +68,7 @@
 		</Menu>
 
 		<Canvas
-			x:Name="TopViewCanvas"
+			x:Name="LeftViewCanvas"
 			Grid.Column="0"
 			Grid.Row="1"
 			Background="#202020"
@@ -77,22 +79,20 @@
 			MouseUp="ViewCanvas_MouseUp"
 			>
 			<Image
-				x:Name="TopViewImage"
+				x:Name="LeftViewImage"
 				Stretch="None"
 				>
 
 				<Image.RenderTransform>
-					<TransformGroup x:Name="TopViewTransformGroup">
-						<ScaleTransform x:Name="TopViewScale" ScaleX="1.0" ScaleY="1.0" CenterX="0" CenterY="0"/>
-						<TranslateTransform x:Name="TopViewTranslate" X="0" Y="0"/>
-						<RotateTransform x:Name="TopViewRotation" Angle="0"/>
+					<TransformGroup x:Name="LeftViewTransformGroup">
+						<ScaleTransform x:Name="LeftViewScale" ScaleX="1.0" ScaleY="1.0" CenterX="0" CenterY="0"/>
+						<TranslateTransform x:Name="LeftViewTranslate" X="0" Y="0"/>
 					</TransformGroup>
 				</Image.RenderTransform>
 			</Image>
 
 			<Line
-				x:Name="HorizontalLine"
-				Visibility="Collapsed"
+				x:Name="LeftHorizontalLine"
 				Stroke="Yellow"
 				StrokeThickness="1"
 				>
@@ -100,8 +100,7 @@
 			</Line>
 
 			<Line
-				x:Name="VerticalLine"
-				Visibility="Collapsed"
+				x:Name="LeftVerticalLine"
 				Stroke="Yellow"
 				StrokeThickness="1"
 				>
@@ -111,9 +110,9 @@
 		</Canvas>
 
 		<Canvas
-			x:Name="SideViewCanvas"
-			Grid.Column="0"
-			Grid.Row="2"
+			x:Name="RightViewCanvas"
+			Grid.Column="1"
+			Grid.Row="1"
 			Background="#202020"
 			ClipToBounds="True"
 			MouseWheel="ViewCanvas_MouseWheel"
@@ -123,21 +122,28 @@
 			>
 
 			<Image
-				x:Name="SideViewImage"
+				x:Name="RightViewImage"
 				Stretch="None"
 				>
 
 				<Image.RenderTransform>
-					<TransformGroup x:Name="SideViewTransformGroup">
-						<ScaleTransform x:Name="SideViewScale" ScaleX="1.0" ScaleY="1.0" CenterX="0" CenterY="0"/>
-						<TranslateTransform x:Name="SideViewTranslate" X="0" Y="0" />
+					<TransformGroup x:Name="RightViewTransformGroup">
+						<ScaleTransform x:Name="RightViewScale" ScaleX="1.0" ScaleY="1.0" CenterX="0" CenterY="0"/>
+						<TranslateTransform x:Name="RightViewTranslate" X="0" Y="0" />
 					</TransformGroup>
 				</Image.RenderTransform>
 			</Image>
 
 			<Line
-				x:Name="DepthLine"
-				Visibility="Collapsed"
+				x:Name="RightHorizontalLine"
+				Stroke="Yellow"
+				StrokeThickness="1"
+				>
+
+			</Line>
+
+			<Line
+				x:Name="RightVerticalLine"
 				Stroke="Yellow"
 				StrokeThickness="1"
 				>
@@ -146,14 +152,15 @@
 		</Canvas>
 
 		<ScrollBar
-			x:Name="DepthScrollBar"
-			Grid.Column="1"
-			Grid.Row="1"
-			Grid.RowSpan="2"
+			x:Name="TimePointScrollBar"
+			Grid.Column="0"
+			Grid.ColumnSpan="2"
+			Grid.Row="2"
 			Minimum="0"
 			Value="0"
 			Maximum="0"
-			ValueChanged="DepthScrollBar_ValueChanged"
+			Orientation="Horizontal"
+			ValueChanged="TimePointScrollBar_ValueChanged"
 			/>
 	</Grid>
 </local:StereoVideoControlBase>

@@ -40,12 +40,10 @@
 				<MenuItem x:Name="PreferencesMenuItem" Header="_Preferences" Click="PreferencesMenuItem_Click"/>
 				<MenuItem x:Name="ReloadResourceMenuItem" Header="_Reload Resources" Click="ReloadResourceMenuItem_Click"/>
 			</MenuItem>
-			<MenuItem x:Name="DevMenuMain" Header="Development" Visibility="Collapsed">
-				<MenuItem x:Name="DevTestLoad" Header="Dev Test Load" Click="DevTestLoad_Click"/>
-				<MenuItem x:Name="DevTestSave" Header="Dev Test Save" Click="DevTestSave_Click"/>
-				<MenuItem x:Name="DevTest2" Header="Dev Test 2" Click="DevTest2_Click"/>
-				<MenuItem x:Name="DevTest3" Header="Dev Test 3" Click="DevTest3_Click"/>
-			</MenuItem>
+			<Separator/>
+			<MenuItem x:Name="DevTestLoad" Visibility="Collapsed" Header="Dev Load" Click="DevTestLoad_Click"/>
+			<MenuItem x:Name="DevTestSave" Visibility="Collapsed" Header="Dev Save" Click="DevTestSave_Click"/>
+			<MenuItem x:Name="DevTestExe" Visibility="Collapsed" Header="Dev Exec" Click="DevTestExec_Click"/>
 		</Menu>
 
 		<!-- 메인 컨텐츠 -->

@@ -19,6 +19,7 @@ using StereoVideoLabelingTool.Classes;
 using StereoVideoLabelingTool.Controls;
 using StereoVideoLabelingTool.Widgets;
 using StereoVideoLabelingTool.Windows;
+using Path = System.IO.Path;
 using Window = System.Windows.Window;
 
 
@@ -26,7 +27,17 @@ namespace StereoVideoLabelingTool
 {
 	public partial class MainWindow : Window
 	{
-		private readonly StereoVideoInfoType _stereo_video_info = new();
+		#region EventHandler
+
+		private event EventHandler<Tuple<string, string, string, string, string>> CreateVideoInfoEvent;      // 생성자에서 초기화 됨
+		private event EventHandler<string> LoadVideoInfoEvent;       // 생성자에서 초기화 됨
+		private event EventHandler<string> SaveVideoInfoEvent;       // 생성자에서 초기화 됨
+		private event EventHandler UnloadVideoInfoEvent;             // 생성자에서 초기화 됨
+		private event EventHandler SaveBackupVideoInfoEvent;         // 생성자에서 초기화 됨
+
+		#endregion
+
+		private readonly StereoVideoInfoType __stereo_video_info = new();
 		private string _current_filename = string.Empty;
 
 		////////////////////////////////////////////////////////////////
@@ -37,70 +48,91 @@ namespace StereoVideoLabelingTool
 			this.IsEnabled = !is_show;
 		}
 
-		private async Task<bool> OnLoadData(string filename) {
-			ShowWaitIndicator(true);
-			var ret = await Task<bool>.Run(() => {
-				try {
-					int load_result = _stereo_video_info.Load(filename);
-					if (load_result < 0)
-						throw new Exception($"{load_result}");
+		private bool OnCreateVideoInfo(Tuple<string, string, string, string, string> new_info) {
+			try {
+				if (__stereo_video_info.IsLoaded() == true)
+					throw new Exception($"Already Loaded");
 
-					_current_filename = filename;
+				// TODO
 
-					return true;
-				}
-				catch (Exception ex) {
-					Logger.Print(LOG_TYPE.ERROR, $"Fail to load label info [ {filename} | {ex.Message} ]");
-					OnUnloadData();
+				//if (__stereo_video_info.Create(filename) == false)
+				//	throw new Exception($"Load TV_LIB");
 
-					return false;
-				}
-			});
-			ShowWaitIndicator(false);
-			return ret;
+				//if (string.IsNullOrWhiteSpace(filename) == false &&
+				//	__stereo_video_info.Load(filename) == false)
+				//	throw new Exception($"Load Image");
+
+				return true;
+			}
+			catch (Exception ex) {
+				Logger.Print(LOG_TYPE.ERROR, $"라벨 모델 생성 실패 [ {ex.Message} ]");
+				OnUnloadVideoInfo();
+
+				return false;
+			}
 		}
-		private async Task<bool> OnSaveData(string filename) {
-			ShowWaitIndicator(true);
-			var ret = await Task<bool>.Run(() => {
-				try {
-					bool save_result = _stereo_video_info.Save(filename);
-					if (save_result == false)
-						throw new Exception($"{save_result}");
+		private bool OnLoadVideoInfo(string filename) {
+			try {
+				if (__stereo_video_info.IsLoaded() == true)
+					throw new Exception($"Already Loaded");
 
-					_current_filename = filename;
+				if (__stereo_video_info.Load(filename) == false)
+					throw new Exception($"Load TV_LIB");
 
-					return true;
-				}
-				catch (Exception ex) {
-					Logger.Print(LOG_TYPE.ERROR, $"Fail to save label info [ {filename} | {ex.Message} ]");
-					return false;
-				}
-			});
-			ShowWaitIndicator(false);
-			return ret;
+				return true;
+			}
+			catch (Exception ex) {
+				Logger.Print(LOG_TYPE.ERROR, $"라벨 모델 불러오기 실패 [ {filename} | {ex.Message} ]");
+				OnUnloadVideoInfo();
+
+				return false;
+			}
 		}
-		private void OnUnloadData() {
-			_stereo_video_info.Unload();
-			_current_filename = string.Empty;
+		private bool OnSaveVideoInfo(string filename = null) {
+			try {
+				if (string.IsNullOrWhiteSpace(filename)) {
+					GlobalSettingManager.GetSetting("Path", "LabelDir", out string label_dir); ;
+					filename = $"{label_dir}\\{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.xml";
+				}
+				
+				if (__stereo_video_info.Save(filename) == false)
+					throw new Exception($"저장 실패");
+
+				return true;
+			}
+			catch (Exception ex) {
+				Logger.Print(LOG_TYPE.ERROR, $"라벨 모델 저장 실패 [ {filename} | {ex.Message} ]");
+				return false;
+			}
+		}
+		private void OnUnloadVideoInfo() {
+			__stereo_video_info.Unload();
 
 			GC.Collect();
 		}
+		private void OnSaveBackupVideoInfo() {
+			try {
+				Directory.CreateDirectory(Path.GetDirectoryName(MyConst.LAST_WORK_BACKUP_PATH));
+				if (__stereo_video_info.Save(MyConst.LAST_WORK_BACKUP_PATH) == false)
+					throw new Exception($"Fail to Backup");
+			}
+			catch (Exception ex) {
+				Logger.Print(LOG_TYPE.WARNING, $"Fail to save backup [ {ex.Message} ]");
+			}
+		}
 
 		private void OnInitializeWidgets() {
-			StreoVideoViewer.OnInitialize(_stereo_video_info);
-			//LeftTopContainer.OnInitialize(_stereo_video_info);
-			RightTopContainer.OnInitialize(_stereo_video_info);
-			RightBotContainer.OnInitialize(_stereo_video_info);
+			StreoVideoViewer.OnInitialize(__stereo_video_info);
+			RightTopContainer.OnInitialize(__stereo_video_info);
+			RightBotContainer.OnInitialize(__stereo_video_info);
 		}
 		private void OnReleaseWidgets() {
 			StreoVideoViewer.OnRelease();
-			//LeftTopContainer.OnRelease();
 			RightTopContainer.OnRelease();
 			RightBotContainer.OnRelease();
 		}
 		private void OnUpdateWidgets(object sender, EventArgs e) {
 			StreoVideoViewer.OnUpdate(sender, e);
-			//LeftTopContainer.OnUpdate(sender, e);
 			RightTopContainer.OnUpdate(sender, e);
 			RightBotContainer.OnUpdate(sender, e);
 		}
@@ -108,9 +140,9 @@ namespace StereoVideoLabelingTool
 		private void OnRestartApp() {
 			if (Environment.ProcessPath == null) {
 				MessageBox.Show(
-					"Fail to restart the application\n" +
-					"Please restart manually",
-					"Error",
+					"프로그램 재시작을 실패했습니다.\n" +
+					"수동으로 재시작하시길 바랍니다.",
+					"에러",
 					MessageBoxButton.OK,
 					MessageBoxImage.Error
 				);
@@ -127,8 +159,93 @@ namespace StereoVideoLabelingTool
 			InitializeComponent();
 
 			try {
-				string before_path_env = Environment.GetEnvironmentVariable("Path")??"";
-				Environment.SetEnvironmentVariable("Path", before_path_env + "./bin;");
+				Directory.CreateDirectory("./temp");
+				Directory.CreateDirectory("./temp/debug");
+
+				CreateVideoInfoEvent += async (s, e) => {
+					bool is_good = true;
+					try {
+						ShowWaitIndicator(true);
+						await Task.Run(() => {
+							//WaitStateMessage = "Releasing Data";
+							OnReleaseWidgets();
+							OnUnloadVideoInfo();
+							//WaitStateMessage = "Creating Data";
+							if (OnCreateVideoInfo(e) == false) throw new Exception();
+							//WaitStateMessage = "Initializing Window";
+							OnInitializeWidgets();
+						});
+					}
+					catch { is_good = false; }
+					finally { ShowWaitIndicator(false); }
+					if (is_good == true) return;
+
+					MessageBox.Show("Fail to create parts library", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+				};
+
+				LoadVideoInfoEvent += async (s, e) => {
+					bool is_good = true;
+					try {
+						ShowWaitIndicator(true);
+						await Task.Run(() => {
+							//WaitStateMessage = "Releasing Data";
+							OnReleaseWidgets();
+							OnUnloadVideoInfo();
+							//WaitStateMessage = "Loading Data";
+							if (OnLoadVideoInfo(e) == false) throw new Exception();
+							//WaitStateMessage = "Initializing Window";
+							OnInitializeWidgets();
+						});
+					}
+					catch { is_good = false; }
+					finally { ShowWaitIndicator(false); }
+					if (is_good == true) return;
+
+					MessageBox.Show("Fail to load parts library", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+				};
+
+				SaveVideoInfoEvent += async (s, e) => {
+					bool is_good = true;
+					try {
+						StreoVideoViewer.Focus();
+						ShowWaitIndicator(true);
+						await Task.Run(() => {
+							//WaitStateMessage = "Saving Data";
+							if (OnSaveVideoInfo(e) == false) throw new Exception();
+						});
+					}
+					catch { is_good = false; }
+					finally { ShowWaitIndicator(false); }
+					if (is_good == true) return;
+
+					MessageBox.Show("Fail to save parts library", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+				};
+
+				UnloadVideoInfoEvent += async (s, e) => {
+					bool is_good = true;
+					try {
+						ShowWaitIndicator(true);
+						await Task.Run(() => {
+							//WaitStateMessage = "Releasing Data";
+							OnReleaseWidgets();
+							OnUnloadVideoInfo();
+						});
+					}
+					catch { is_good = false; }
+					finally { ShowWaitIndicator(false); }
+					if (is_good == true) return;
+
+					MessageBox.Show("Fail to unload parts library", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+				};
+
+				SaveBackupVideoInfoEvent += async (s, e) => {
+					try {
+						await Task.Run(() => {
+							OnSaveBackupVideoInfo();
+						});
+					}
+					catch { }
+				};
 			}
 			catch (Exception ex) {
 				Logger.Print(LOG_TYPE.ERROR, $"Fail to initialize window [ {ex.Message} ]");
@@ -136,7 +253,10 @@ namespace StereoVideoLabelingTool
 			}
 		}
 		private void Window_Loaded(object sender, RoutedEventArgs e) {
-
+#if MY_DEBUG
+			DevTestLoad.Visibility = Visibility.Visible;
+			DevTestSave.Visibility = Visibility.Visible;
+#endif
 		}
 		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 
@@ -149,31 +269,24 @@ namespace StereoVideoLabelingTool
 			// TODO : 파일 선택 루틴
 		}
 		private void CloseMenuItem_Click(object sender, RoutedEventArgs e) {
-			try {
-				OnReleaseWidgets();
-				OnUnloadData();
-			}
-			catch {
-				MessageBox.Show("Fail to close label info", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-			}
+			UnloadVideoInfoEvent(sender, e);
 		}
-		private async void SaveMenuItem_Click(object sender, RoutedEventArgs e) {
-			try {
-				if (_stereo_video_info.IsLoaded() &&
-					!await OnSaveData(_current_filename))
-					throw new Exception();
-			}
-			catch {
-				MessageBox.Show("Fail to save label info", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-			}
+		private void SaveMenuItem_Click(object sender, RoutedEventArgs e) {
+			if (!__stereo_video_info.IsLoaded()) return;
+			SaveVideoInfoEvent.Invoke(sender, null);
 		}
 		private void SaveAsMenuItem_Click(object sender, RoutedEventArgs e) {
+			if (!__stereo_video_info.IsLoaded()) {
+				MessageBox.Show("로딩된 라벨이 없음", "에러", MessageBoxButton.OK, MessageBoxImage.Error);
+				return;
+			}
+
 			// TODO : 파일 선택 루틴
 		}
 		private void RestartMenuItem_Click(object sender, RoutedEventArgs e) {
 			if (MessageBox.Show(
-					"Do you want to restart the application?",
-					"Restart",
+					"프로그램을 재시작 하시겠습니까?",
+					"재시작",
 					MessageBoxButton.YesNo,
 					MessageBoxImage.Question
 					)
@@ -184,16 +297,15 @@ namespace StereoVideoLabelingTool
 		}
 		private void ExitMenuItem_Click(object sender, RoutedEventArgs e) {
 			if (MessageBox.Show(
-					"Do you want to exit the application?",
-					"Exit",
+					"프로그램을 종료하시겠습니까?",
+					"종료",
 					MessageBoxButton.YesNo,
 					MessageBoxImage.Question
 				)
 				!= MessageBoxResult.Yes)
 				return;
 
-			OnReleaseWidgets();
-			OnUnloadData();
+			UnloadVideoInfoEvent(sender, e);
 			System.Windows.Application.Current.Shutdown();
 		}
 
@@ -205,23 +317,23 @@ namespace StereoVideoLabelingTool
 
 			OnRestartApp();
 		}
-		private async void ReloadResourceMenuItem_Click(object sender, RoutedEventArgs e) {
+		private void ReloadResourceMenuItem_Click(object sender, RoutedEventArgs e) {
 			// 로딩된 상태이면 저장할 건지 물어보기
-			if (_stereo_video_info.IsLoaded()) {
+			if (__stereo_video_info.IsLoaded()) {
 				var ret = MessageBox.Show(
-					"Changing of current opened data will be discarded.\n" +
-					"Would you like to save the data and proceed?",
-					"Warning",
+					"현재 열린 데이터의 변화값들은 모두 버려지게 됩니다.\n" +
+					"그래도 종료하시겠습니까?",
+					"경고",
 					MessageBoxButton.YesNoCancel,
 					MessageBoxImage.Question);
 
 				switch (ret) {
 					case MessageBoxResult.Yes:
 						try {
-							if (!await OnSaveData(_current_filename)) throw new Exception();
+							SaveVideoInfoEvent.Invoke(sender, null);
 						}
 						catch {
-							MessageBox.Show("Fail to save label info", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+							MessageBox.Show("저장 실패", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 							return;
 						}
 						break;
@@ -229,35 +341,19 @@ namespace StereoVideoLabelingTool
 					default: return;
 				}
 
-				OnReleaseWidgets();
-				OnUnloadData();
+				UnloadVideoInfoEvent(sender, e);
 			}
 
 			// TODO
 		}
 
-		private async void DevTestLoad_Click(object sender, RoutedEventArgs e) {
-			try {
-				OnUnloadData();
-				await OnLoadData("test");
-				OnInitializeWidgets();
-			}
-			catch {
-				MessageBox.Show("Fail to load label info", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-			}
+		private void DevTestLoad_Click(object sender, RoutedEventArgs e) {
+			LoadVideoInfoEvent.Invoke(sender, "./temp/debug/origin/20250406_202319.xml");
 		}
-		private async void DevTestSave_Click(object sender, RoutedEventArgs e) {
-			try {
-				await OnSaveData("./test/test.data");
-			}
-			catch {
-				MessageBox.Show("Fail to save label info", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-			}
+		private void DevTestSave_Click(object sender, RoutedEventArgs e) {
+			SaveVideoInfoEvent.Invoke(sender, "./temp/debug/delta/20250406_202319.xml");
 		}
-		private void DevTest2_Click(object sender, RoutedEventArgs e) {
-		}
-		private void DevTest3_Click(object sender, RoutedEventArgs e) {
-
+		private void DevTestExec_Click(object sender, RoutedEventArgs e) {
 		}
 
 		private void LabelFileManagerControl_SelectedFIle(object sender, string e) {

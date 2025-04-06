@@ -22,6 +22,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Xml;
+using System.Xml.Linq;
+using OpenCvSharp;
 using StereoVideoLabelingTool.Classes;
 using StereoVideoLabelingTool.Widgets;
 using static System.Collections.Specialized.BitVector32;
@@ -29,80 +31,74 @@ using Point = System.Windows.Point;
 
 namespace StereoVideoLabelingTool.Widgets
 {
-	public enum DRAG_TYPE
+	public enum TOOL_TYPE
 	{
 		NONE,
 		TRANSLATE_IMAGE,
 		ROTATE_IMAGE,
 		BRUSH_LABEL,
 	}
+	public enum DRAG_TYPE
+	{
+		NONE,
+		TRANSLATE_IMAGE,
+		INDEXING_IMAGE,
+		BRUSH_LABEL,
+	}
 
 	public partial class VideoViewerControl : StereoVideoControlBase
 	{
-		private readonly int[] __lab_color_map = new int[256];
-		private int[]? __top_view_data = null;
-		private int[]? __side_view_data = null;
-		private WriteableBitmap? __top_view_bitmap = null;
-		private WriteableBitmap? __side_view_bitmap = null;
+		private int[]? __left_view_data = null;
+		private int[]? __right_view_data = null;
+		private WriteableBitmap? __left_view_bitmap = null;
+		private WriteableBitmap? __right_view_bitmap = null;
 
-		private double __last_canvas_w = 0.0;
-		private double __last_canvas_h = 0.0;
-		private double __scale_rate = 1.0;
-		private Int64 __show_z_idx = -1;
-		private FLOAT3 __lut_min_val = new() { x = 0, y = 0, z = 0, };
-		private FLOAT3 __lut_max_val = new() { x = 255, y = 255, z = 255, };
+		private SIZE3 __img_size = new(0, 0, 0);
+		private INDEX3 __img_index = new(0, 0, 0);
+
+		private float __lut_min_val = 0;
+		private float __lut_max_val = 255;
 		private float __lab_blend_rate = 0.3f;
 
+		private TOOL_TYPE __tool_type = TOOL_TYPE.NONE;
 		private DRAG_TYPE __drag_type = DRAG_TYPE.NONE;
-		private POINT3 __drag_prev_position = new();
+		private INDEX3 __left_prev_drag_position = new();
+		private INDEX3 __right_prev_drag_position = new();
 
 
 		////////////////////////////////////////////////////////////////
 
 		protected override void Initialize() {
 			try {
-				//__top_view_data = new int[__img_info.ImgSize.w * __img_info.ImgSize.h];
-				//__side_view_data = new int[__img_info.ImgSize.w * 2 * __img_info.ImgSize.d];
-				//__top_view_bitmap = new WriteableBitmap((int)__img_info.ImgSize.w, (int)__img_info.ImgSize.h, 96, 96, PixelFormats.Bgra32, null);
-				//__side_view_bitmap = new WriteableBitmap((int)__img_info.ImgSize.w * 2, (int)__img_info.ImgSize.d, 96, 96, PixelFormats.Bgra32, null);
+				__img_size.W = VideoInfo.ImgSize.W;
+				__img_size.H = VideoInfo.ImgSize.H;
+				__img_size.D = VideoInfo.ImgSize.D;
+				__img_index.X = VideoInfo.GetSetting("VIDEO_LOC", "X", out long t_idx_x) ? t_idx_x : VideoInfo.ImgSize.W / 2;
+				__img_index.Y = VideoInfo.GetSetting("VIDEO_LOC", "Y", out long t_idx_y) ? t_idx_y : VideoInfo.ImgSize.H / 2;
+				__img_index.Z = VideoInfo.GetSetting("VIDEO_LOC", "Z", out long t_idx_z) ? t_idx_z : 0;
+				__img_index.X = Math.Clamp(__img_index.X, 0, __img_size.W - 1);
+				__img_index.Y = Math.Clamp(__img_index.Y, 0, __img_size.H - 1);
+				__img_index.Z = Math.Clamp(__img_index.Z, 0, __img_size.D - 1);
 
-				//TopViewGridRow.Height = new GridLength(__img_info.ImgSize.h, GridUnitType.Star);
-				//SideViewGridRow.Height = new GridLength(__img_info.ImgSize.d, GridUnitType.Star);
+				__left_view_data = new int[__img_size.W * __img_size.H];
+				__right_view_data = new int[__img_size.W * __img_size.H];
+				__left_view_bitmap = new WriteableBitmap((int)__img_size.W, (int)__img_size.H, 96, 96, PixelFormats.Bgra32, null);
+				__right_view_bitmap = new WriteableBitmap((int)__img_size.W, (int)__img_size.H, 96, 96, PixelFormats.Bgra32, null);
 
-				//__scale_rate = 1.0;
-				//__show_z_idx = __img_info.ImgSize.d / 2;
-				//__lab_blend_rate = 0.3f;
-				//switch (__img_info.ImgType) {
-				//	case IMG_TYPE.GRAY:
-				//		__lut_min_val.x = 0;
-				//		__lut_min_val.y = 0;
-				//		__lut_min_val.z = 0;
-				//		__lut_max_val.x = 65535;
-				//		__lut_max_val.y = 65535;
-				//		__lut_max_val.z = 65535;
-				//		break;
-				//	case IMG_TYPE.COLOR:
-				//		__lut_min_val.x = 0;
-				//		__lut_min_val.y = 0;
-				//		__lut_min_val.z = 0;
-				//		__lut_max_val.x = 255;
-				//		__lut_max_val.y = 255;
-				//		__lut_max_val.z = 255;
-				//		break;
-				//}
-				//TopViewImage.Source = __top_view_bitmap;
-				//SideViewImage.Source = __side_view_bitmap;
-				//DepthScrollBar.Maximum = __img_info.ImgSize.d - 1;
-				//DepthScrollBar.ViewportSize = __img_info.ImgSize.d / 10;
-				//DepthScrollBar.Value = 0;
-				//DepthScrollBar.Value = __img_info.ImgSize.d / 2;
+				__lut_min_val = 0;
+				__lut_max_val = 255;
+				__lab_blend_rate = 0.3f;
 
-				//var isEnable = __img_info.ImgSize.d > 1 ? Visibility.Visible : Visibility.Collapsed;
-				//HorizontalLine.Visibility = isEnable;
-				//VerticalLine.Visibility = isEnable;
-				//DepthLine.Visibility = isEnable;
+				LeftViewImage.Source = __left_view_bitmap;
+				RightViewImage.Source = __right_view_bitmap;
+				TimePointScrollBar.Maximum = __img_size.D - 1;
+				TimePointScrollBar.ViewportSize = __img_size.D / 10;
+				TimePointScrollBar.Value = __img_index.Z;
 
-				//ImageControlBase_SizeChanged(this, null);
+				__drag_type = DRAG_TYPE.NONE;
+				__tool_type = TOOL_TYPE.NONE;
+
+				ImageControlBase_SizeChanged(this, null);
 			}
 			catch (Exception ex) {
 				Release();
@@ -111,10 +107,18 @@ namespace StereoVideoLabelingTool.Widgets
 		}
 		protected override void Release() {
 			try {
-				__top_view_data = null;
-				__side_view_data = null;
-				__top_view_bitmap = null;
-				__side_view_bitmap = null;
+				__drag_type = DRAG_TYPE.NONE;
+				__tool_type = TOOL_TYPE.NONE;
+				__left_view_data = null;
+				__right_view_data = null;
+				__left_view_bitmap = null;
+				__right_view_bitmap = null;
+				__img_index.X = 0;
+				__img_index.Y = 0;
+				__img_index.Z = 0;
+				__img_size.W = 0;
+				__img_size.H = 0;
+				__img_size.D = 0;
 			}
 			catch (Exception ex) {
 				Logger.Print(LOG_TYPE.ERROR, $"Fail to release widget control [ {this.GetType().Name} | {ex.Message} ]");
@@ -122,19 +126,9 @@ namespace StereoVideoLabelingTool.Widgets
 		}
 		protected override void Update(object sender, EventArgs e) {
 			try {
-				if (!VideoInfo.GetSetting("LUT", "MIN", out float t_min)) t_min = 0;
-				if (!VideoInfo.GetSetting("LUT", "MAX", out float t_max)) t_max = 65535;
-				if (!VideoInfo.GetSetting("LUT", "BLEND", out float t_blend)) t_blend = 0.3f;
-
-				__lut_min_val.x = t_min;
-				__lut_min_val.y = t_min;
-				__lut_min_val.z = t_min;
-
-				__lut_max_val.x = t_max;
-				__lut_max_val.y = t_max;
-				__lut_max_val.z = t_max;
-
-				__lab_blend_rate = t_blend;
+				__lut_min_val = VideoInfo.GetSetting("LUT", "MIN", out float t_min) ? t_min : 0;
+				__lut_max_val = VideoInfo.GetSetting("LUT", "MAX", out float t_max) ? t_max : 255;
+				__lab_blend_rate = VideoInfo.GetSetting("LUT", "BLEND", out float t_blend) ? t_blend : 0.3f;
 
 				OnRefreshViewImage();
 			}
@@ -147,335 +141,275 @@ namespace StereoVideoLabelingTool.Widgets
 
 		public VideoViewerControl() {
 			InitializeComponent();
-
-			Random random = new(4969);
-			for (int i = 0; i < __lab_color_map.Length; i++) {
-				int b = i % 3 != 0 ? random.Next(130, 230) : 0;
-				int g = i % 3 != 1 ? random.Next(130, 230) : 0;
-				int r = i % 3 != 2 ? random.Next(130, 230) : 0;
-				__lab_color_map[i] = (int)((b << 24) | (g << 16) | (r << 8) | 0xFF);
-			}
-			__lab_color_map[0] = 0xFF;
 		}
 		private void ImageControlBase_SizeChanged(object sender, SizeChangedEventArgs? e) {
 			if (VideoInfo == null) return;
 
 			UpdateLayout();
 
+			double new_scale = 1.0;
+			if (e == null) {
+				new_scale = Math.Min(LeftViewCanvas.ActualWidth / __img_size.W, LeftViewCanvas.ActualHeight / __img_size.H);
+			}
+			else {
+				new_scale = LeftViewScale.ScaleX;
+			}
 
-			//TopViewRotation.CenterX = TopViewCanvas.ActualWidth / 2;
-			//TopViewRotation.CenterY = TopViewCanvas.ActualHeight / 2;
-
-			//if (e == null) {
-			//	__scale_rate = Math.Min(TopViewCanvas.ActualWidth / __img_info.ImgSize.w, TopViewCanvas.ActualHeight / __img_info.ImgSize.h);
-			//	TopViewScale.ScaleX = TopViewScale.ScaleY = SideViewScale.ScaleX = SideViewScale.ScaleY = __scale_rate;
-			//	TopViewTranslate.X = (TopViewCanvas.ActualWidth - __img_info.ImgSize.w * TopViewScale.ScaleX) / 2.0;
-			//	TopViewTranslate.Y = (TopViewCanvas.ActualHeight - __img_info.ImgSize.h * TopViewScale.ScaleY) / 2.0;
-			//	TopViewRotation.Angle = 0.0;
-			//}
-			//else {
-			//	TopViewTranslate.X += (TopViewCanvas.ActualWidth - __last_canvas_w) / 2;
-			//	TopViewTranslate.Y += (TopViewCanvas.ActualHeight - __last_canvas_h) / 2;
-			//}
-			//__last_canvas_w = TopViewCanvas.ActualWidth;
-			//__last_canvas_h = TopViewCanvas.ActualHeight;
-
-			//SideViewTranslate.X = (SideViewCanvas.ActualWidth - __img_info.ImgSize.w * 2 * SideViewScale.ScaleX) / 2.0;
-			//SideViewTranslate.Y = (SideViewCanvas.ActualHeight - __img_info.ImgSize.d * SideViewScale.ScaleY) / 2.0;
-
-			//HorizontalLine.X1 = 0;
-			//HorizontalLine.X2 = TopViewCanvas.ActualWidth;
-			//HorizontalLine.Y1 = TopViewCanvas.ActualHeight / 2;
-			//HorizontalLine.Y2 = TopViewCanvas.ActualHeight / 2;
-			//VerticalLine.X1 = TopViewCanvas.ActualWidth / 2;
-			//VerticalLine.X2 = TopViewCanvas.ActualWidth / 2;
-			//VerticalLine.Y1 = 0;
-			//VerticalLine.Y2 = TopViewCanvas.ActualHeight;
-			//DepthLine.X1 = 0;
-			//DepthLine.X2 = SideViewCanvas.ActualWidth;
+			using (Dispatcher.DisableProcessing()) {
+				LeftViewScale.ScaleX = LeftViewScale.ScaleY = RightViewScale.ScaleX = RightViewScale.ScaleY = new_scale;
+				LeftViewTranslate.X = RightViewTranslate.X = (LeftViewCanvas.ActualWidth  - __img_size.W * new_scale) / 2.0;
+				LeftViewTranslate.Y = RightViewTranslate.Y = (LeftViewCanvas.ActualHeight - __img_size.H * new_scale) / 2.0;
+			}
 
 			OnRefreshViewImage();
 		}
 
-		private void DepthScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> args) {
-			if (args.OldValue == args.NewValue) return;
-			OnChangeDepth((Int64)Math.Round(args.NewValue));
+		private void TimePointScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> args) {
+			if (VideoInfo == null ||
+				args.OldValue == args.NewValue)
+				return;
+
+			OnRefreshViewImage(new(__img_index.X, __img_index.Y, (long)Math.Round(args.NewValue)));
 		}
 
 		private void ViewCanvas_MouseWheel(object sender, MouseWheelEventArgs e) {
-			if (VideoInfo == null) return;
+			if (VideoInfo == null ||
+				sender is not Canvas canvas)
+				return;
 
 			if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control)) {
 				double zoomSpeed = 1.1;
-				double new_scale = e.Delta > 0 ? __scale_rate * zoomSpeed : __scale_rate * (1.0 / zoomSpeed);
-				OnChangeImageScale(new_scale);
+				double new_scale = e.Delta > 0 ? zoomSpeed : (1.0 / zoomSpeed);
+				OnChangeImageScale(canvas, new_scale);
 			}
 			else {
-				Int64 new_idx = e.Delta < 0 ? __show_z_idx + 1 : __show_z_idx - 1;
-				OnChangeDepth(new_idx);
+				var new_idx = new INDEX3(__img_index.X, __img_index.Y, __img_index.Z);
+				new_idx.Z += e.Delta < 0 ? 1 : -1;
+				OnRefreshViewImage(new_idx);
 			}
 		}
 		private void ViewCanvas_MouseDown(object sender, MouseButtonEventArgs e) {
-			if (VideoInfo == null) return;
+			if (VideoInfo == null ||
+				sender is not Canvas canvas)
+				return;
 
-			var canvas = (Canvas)sender;
-			var cur_pos = e.GetPosition(canvas);
-			POINT3 pos_3d = new() {
-				x = cur_pos.X,
-				y = cur_pos.Y,
-				z = __show_z_idx,
-			};
-			__drag_prev_position = pos_3d;
+			try {
+				var ui_pos = e.GetPosition(canvas);
+				var pxl_pos = canvas.RenderTransform.Inverse.Transform(ui_pos);
 
-			if (e.LeftButton == MouseButtonState.Pressed) {
-				if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift)) {
-					__drag_type = DRAG_TYPE.TRANSLATE_IMAGE;
+				if (e.ChangedButton == MouseButton.Left) {
+					__left_prev_drag_position.X = (long)Math.Round(pxl_pos.X);
+					__left_prev_drag_position.Y = (long)Math.Round(pxl_pos.Y);
+					__left_prev_drag_position.Z = (long)Math.Round(TimePointScrollBar.Value);
+
+					if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift)) {
+						__drag_type = DRAG_TYPE.TRANSLATE_IMAGE;
+					}
+					else {
+						__drag_type = DRAG_TYPE.BRUSH_LABEL;
+						OnBrushLabel(canvas, __left_prev_drag_position);
+					}
 				}
-				else if (
-					Keyboard.Modifiers.HasFlag(ModifierKeys.Control) &&
-					canvas == TopViewCanvas
-					) {
-					__drag_type = DRAG_TYPE.ROTATE_IMAGE;
+				else if (e.ChangedButton == MouseButton.Right) {
+					__right_prev_drag_position.X = (long)Math.Round(pxl_pos.X);
+					__right_prev_drag_position.Y = (long)Math.Round(pxl_pos.Y);
+					__right_prev_drag_position.Z = (long)Math.Round(TimePointScrollBar.Value);
+
 				}
-				else {
-					__drag_type = DRAG_TYPE.BRUSH_LABEL;
-					OnBrushLabel(canvas, pos_3d);
+
+				if (__drag_type != DRAG_TYPE.NONE) {
+					canvas.CaptureMouse();
 				}
 			}
-
-			if (__drag_type != DRAG_TYPE.NONE) {
-				canvas.CaptureMouse();
-			}
+			catch (Exception ex) { Logger.Print(LOG_TYPE.ERROR, $"비디오 뷰어 컨트롤에서 마우스 down 이벤트 처리 오류 [ {ex.Message} ]"); }
+			finally { canvas.ReleaseMouseCapture(); }
 		}
-		private void ViewCanvas_MouseMove(object sender, MouseEventArgs? e) {
-			var canvas = (Canvas)sender;
-			POINT3 cur_pos_3d;
-			if (e == null) {
-				cur_pos_3d = __drag_prev_position;
-			}
-			else {
-				var cur_pos = e.GetPosition(canvas);
-				cur_pos_3d.x = (float)cur_pos.X;
-				cur_pos_3d.y = (float)cur_pos.Y;
-			}
-			cur_pos_3d.z = (float)__show_z_idx;
+		private void ViewCanvas_MouseMove(object sender, MouseEventArgs e) {
+			if (sender is not Canvas canvas) return;
 
-			switch (__drag_type) {
-				case DRAG_TYPE.TRANSLATE_IMAGE: OnChangeImageTranslate(canvas, cur_pos_3d); break;
-				case DRAG_TYPE.BRUSH_LABEL: OnBrushLabel(canvas, cur_pos_3d); break;
-				default: return;
-			}
+			try {
+				var ui_pos = e.GetPosition(canvas);
+				var pxl_pos = canvas.RenderTransform.Inverse.Transform(ui_pos);
+				var pxl_pos_3 = new INDEX3((long)Math.Round(pxl_pos.X), (long)Math.Round(pxl_pos.Y), (long)Math.Round(TimePointScrollBar.Value));
 
-			__drag_prev_position = cur_pos_3d;
+				switch (__drag_type) {
+					case DRAG_TYPE.TRANSLATE_IMAGE: OnChangeImageTranslate(canvas, pxl_pos_3); break;
+					case DRAG_TYPE.BRUSH_LABEL: OnBrushLabel(canvas, pxl_pos_3); break;
+					default: return;
+				}
+
+				switch (__drag_type) {
+					case DRAG_TYPE.TRANSLATE_IMAGE:
+					case DRAG_TYPE.BRUSH_LABEL: __left_prev_drag_position = pxl_pos_3; break;
+					default: return;
+				}
+			}
+			catch (Exception ex) { Logger.Print(LOG_TYPE.ERROR, $"비디오 뷰어 컨트롤에서 마우스 move 이벤트 처리 오류 [ {ex.Message} ]"); }
 		}
 		private void ViewCanvas_MouseUp(object sender, MouseButtonEventArgs e) {
-			__drag_type = DRAG_TYPE.NONE;
-			((Canvas)sender).ReleaseMouseCapture();
+			if (sender is not Canvas canvas) return;
+			try {
+
+			}
+			finally {
+				__drag_type = DRAG_TYPE.NONE;
+				canvas.ReleaseMouseCapture();
+			}
 		}
 
-		private unsafe void OnRefreshViewImage() {
+		private unsafe void OnRefreshViewImage(INDEX3 new_idx = null) {
+			if (VideoInfo == null ||
+				__left_view_data == null ||
+				__right_view_data == null ||
+				__left_view_bitmap == null ||
+				__right_view_bitmap == null)
+				return;
+
 			try {
-				if (VideoInfo == null ||
-					__top_view_data == null ||
-					__side_view_data == null ||
-					__top_view_bitmap == null ||
-					__side_view_bitmap == null)
-					return;
+				using (Dispatcher.DisableProcessing()) {
+					INDEX3 next_idx = new_idx ?? __img_index;
+					__img_index.X = Math.Clamp(next_idx.X, 0, Math.Max(0, __img_size.W - 1));
+					__img_index.Y = Math.Clamp(next_idx.Y, 0, Math.Max(0, __img_size.H - 1));
+					__img_index.Z = Math.Clamp(next_idx.Z, 0, Math.Max(0, __img_size.D - 1));
 
-				/*
-				__show_z_idx = Math.Clamp(__show_z_idx, 0, __img_info.ImgSize.w - 1);
-				DepthLine.Y1 = DepthLine.Y2 = SideViewTransformGroup.Transform(new Point(0, __show_z_idx)).Y;
-
-				Matrix top_view_to_image_matrix = TopViewTransformGroup.Value;
-				Matrix side_image_to_view_matrix = SideViewTransformGroup.Value;
-				top_view_to_image_matrix.Invert();
-				double h_loc = TopViewCanvas.ActualHeight / 2;
-
-				if (__img_info.ImgType == IMG_TYPE.GRAY) {
-					float* t_img_cast_ptr = (float*)__img_info.ImgDataPtr;
-					int to_bgra(float img, int lab, float min, float max, float blend) {
-						int t_img = Math.Clamp((int)((img - min) / (max - min) * 255.0f), 0, 255);
-						int r = (int)(t_img * (1.0 - blend) + (((lab >> 08) & 0xFF) * blend));
-						int g = (int)(t_img * (1.0 - blend) + (((lab >> 16) & 0xFF) * blend));
-						int b = (int)(t_img * (1.0 - blend) + (((lab >> 24) & 0xFF) * blend));
-						return (b << 0) | (g << 8) | (r << 16) | (0xFF << 24);
+					try {
+						TimePointScrollBar.ValueChanged -= TimePointScrollBar_ValueChanged;
+						TimePointScrollBar.Value = next_idx.Z;
 					}
-					Parallel.For(0, __img_info.ImgSize.h, y => {
-						for (Int64 x = 0; x < __img_info.ImgSize.w; x++) {
-							Int64 dst_pxl_idx = x + y * __img_info.ImgOffset.w;
-							Int64 src_pxl_idx = x + y * __img_info.ImgOffset.w + __show_z_idx * __img_info.ImgOffset.h;
-							float img_val = t_img_cast_ptr[src_pxl_idx];
-							int lab_val = __lab_color_map[__img_info.LabDataPtr[src_pxl_idx]];
-							__top_view_data[dst_pxl_idx] = to_bgra(
-								img_val,
-								lab_val,
-								__lut_min_val.x,
-								__lut_max_val.x,
-								__lab_blend_rate
-							);
-						}
-					});
-					Parallel.For(0, __img_info.ImgSize.d, z => {
-						for (Int64 x = 0; x < __img_info.ImgSize.w * 2; x++) {
-							Int64 dst_pxl_idx = x + z * __img_info.ImgSize.w * 2;
+					finally { TimePointScrollBar.ValueChanged += TimePointScrollBar_ValueChanged; }
 
-							Point pt = new(x, 0);
-							pt = side_image_to_view_matrix.Transform(pt);
-							pt.Y = h_loc;
-							pt = top_view_to_image_matrix.Transform(pt);
+					// 이미지 그리기
+					{
+						VideoInfo.LeftVideoCapture.Set(VideoCaptureProperties.PosFrames, next_idx.Z);
+						VideoInfo.RightVideoCapture.Set(VideoCaptureProperties.PosFrames, next_idx.Z);
 
-							if (pt.X < 0 || __img_info.ImgSize.w <= pt.X ||
-								pt.Y < 0 || __img_info.ImgSize.h <= pt.Y) {
-								__side_view_data[dst_pxl_idx] = 0;
-							}
-							else {
-								Int64 src_pxl_idx = (Int64)pt.X + (Int64)pt.Y * __img_info.ImgOffset.w + z * __img_info.ImgOffset.h;
-								float img_val = t_img_cast_ptr[src_pxl_idx];
-								int lab_val = __lab_color_map[__img_info.LabDataPtr[src_pxl_idx]];
-								__side_view_data[dst_pxl_idx] = to_bgra(
-									img_val,
-									lab_val,
-									__lut_min_val.x,
-									__lut_max_val.x,
-									__lab_blend_rate
-								);
-							}
-						}
-					});
-				}
-				else if (__img_info.ImgType == IMG_TYPE.COLOR) {
-					int to_bgra(int img, int lab, FLOAT3 min, FLOAT3 max, float alpha) {
-						int pxl_r = Math.Clamp((int)(((img >> 24 & 0xFF) - min.x) / (max.x - min.x) * 255.0f), 0, 255);
-						int pxl_g = Math.Clamp((int)(((img >> 16 & 0xFF) - min.y) / (max.y - min.y) * 255.0f), 0, 255);
-						int pxl_b = Math.Clamp((int)(((img >>  8 & 0xFF) - min.z) / (max.z - min.z) * 255.0f), 0, 255);
-						int r = (int)(pxl_r * (1.0 - alpha) + (((lab >> 08) & 0xFF) * alpha));
-						int g = (int)(pxl_g * (1.0 - alpha) + (((lab >> 16) & 0xFF) * alpha));
-						int b = (int)(pxl_b * (1.0 - alpha) + (((lab >> 24) & 0xFF) * alpha));
-						return (b << 0) | (g << 8) | (r << 16) | (0xFF << 24);
-					}
-					Parallel.For(0, __img_info.ImgSize.h, y => {
-						for (Int64 x = 0; x < __img_info.ImgSize.w; x++) {
-							Int64 dst_pxl_idx = x + y * __img_info.ImgOffset.w;
-							Int64 src_pxl_idx = x + y * __img_info.ImgOffset.w + __show_z_idx * __img_info.ImgOffset.h;
-							int img_val = __img_info.ImgDataPtr[src_pxl_idx];
-							int lab_val = __lab_color_map[__img_info.LabDataPtr[src_pxl_idx]];
-							__top_view_data[dst_pxl_idx] = to_bgra(
-								img_val,
-								lab_val,
-								__lut_min_val,
-								__lut_max_val,
-								__lab_blend_rate
-							);
-						}
-					});
-					Parallel.For(0, __img_info.ImgSize.d, z => {
-						for (Int64 x = 0; x < __img_info.ImgSize.w * 2; x++) {
-							Int64 dst_pxl_idx = x + z * __img_info.ImgSize.w * 2;
+						var t_left = new Mat();
+						var t_right = new Mat();
+						VideoInfo.LeftVideoCapture.Read(t_left);
+						VideoInfo.RightVideoCapture.Read(t_right);
 
-							Point pt = new(x, 0);
-							pt = side_image_to_view_matrix.Transform(pt);
-							pt.Y = h_loc;
-							pt = top_view_to_image_matrix.Transform(pt);
+						byte* t_left_ptr = (byte*)t_left.DataPointer;
+						byte* t_right_ptr = (byte*)t_right.DataPointer;
 
-							if (pt.X < 0 || __img_info.ImgSize.w <= pt.X ||
-								pt.Y < 0 || __img_info.ImgSize.h <= pt.Y) {
-								__side_view_data[dst_pxl_idx] = 0;
-							}
-							else {
-								Int64 src_pxl_idx = (Int64)pt.X + (Int64)pt.Y * __img_info.ImgOffset.w + z * __img_info.ImgOffset.h;
-								int img_val = __img_info.ImgDataPtr[src_pxl_idx];
-								int lab_val = __lab_color_map[__img_info.LabDataPtr[src_pxl_idx]];
-								__side_view_data[dst_pxl_idx] = to_bgra(
-									img_val,
-									lab_val,
+						Parallel.For(0, __img_size.H, y => {
+							for (long x = 0; x < __img_size.W; x++) {
+								long pxl_idx = x + y * __img_size.W;
+								int val =
+									t_left_ptr[pxl_idx * 3 + 0] << 0 |
+									t_left_ptr[pxl_idx * 3 + 1] << 8 |
+									t_left_ptr[pxl_idx * 3 + 2] << 16;
+								__left_view_data[pxl_idx] = MyConst.ToBGRA(
+									val,
+									0, //_label_data[src_pxl_idx],
 									__lut_min_val,
 									__lut_max_val,
 									__lab_blend_rate
 								);
 							}
-						}
-					});
+						});
+						Parallel.For(0, __img_size.H, y => {
+							for (long x = 0; x < __img_size.W; x++) {
+								long pxl_idx = x + y * __img_size.W;
+								int val =
+									t_right_ptr[pxl_idx * 3 + 0] << 0 |
+									t_right_ptr[pxl_idx * 3 + 1] << 8 |
+									t_right_ptr[pxl_idx * 3 + 2] << 16;
+								__right_view_data[pxl_idx] = MyConst.ToBGRA(
+									val,
+									0, //_label_data[src_pxl_idx],
+									__lut_min_val,
+									__lut_max_val,
+									__lab_blend_rate
+								);
+							}
+						});
+
+						__left_view_bitmap.WritePixels(new Int32Rect(0, 0, (int)__img_size.W, (int)__img_size.H), __left_view_data, (int)(__img_size.W * 4), 0);
+						__right_view_bitmap.WritePixels(new Int32Rect(0, 0, (int)__img_size.W, (int)__img_size.H), __right_view_data, (int)(__img_size.W * 4), 0);
+					}
+
+					// cross line 정렬
+					{
+						var left_cross_center = LeftViewTransformGroup.Transform(new(next_idx.X, next_idx.Y));
+						var right_cross_center = RightViewTransformGroup.Transform(new(next_idx.X, next_idx.Y));
+
+						LeftHorizontalLine.X1 = 0;
+						LeftHorizontalLine.X2 = LeftViewCanvas.RenderSize.Width;
+						LeftHorizontalLine.Y1 = LeftHorizontalLine.Y2 = left_cross_center.Y;
+						LeftVerticalLine.X1 = LeftVerticalLine.X2 = left_cross_center.X;
+						LeftVerticalLine.Y1 = 0;
+						LeftVerticalLine.Y2 = LeftViewCanvas.RenderSize.Height;
+
+						RightHorizontalLine.X1 = 0;
+						RightHorizontalLine.X2 = RightViewCanvas.RenderSize.Width;
+						RightHorizontalLine.Y1 = RightHorizontalLine.Y2 = right_cross_center.Y;
+						RightVerticalLine.X1 = RightVerticalLine.X2 = right_cross_center.X;
+						RightVerticalLine.Y1 = 0;
+						RightVerticalLine.Y2 = RightViewCanvas.RenderSize.Height;
+					}
 				}
-				else
-					return;
-
-				__top_view_bitmap.WritePixels(new Int32Rect(0, 0, (int)__img_info.ImgSize.w, (int)__img_info.ImgSize.h), __top_view_data, (int)(__img_info.ImgSize.w * 4), 0);
-				__side_view_bitmap.WritePixels(new Int32Rect(0, 0, (int)__img_info.ImgSize.w * 2, (int)__img_info.ImgSize.d), __side_view_data, (int)(__img_info.ImgSize.w * 4) * 2, 0);
-				*/
 			}
-			catch (Exception ex) {
-				Logger.Print(LOG_TYPE.ERROR, $"Fail to update viewer image in ImageLabelViewer Control [ {ex.Message} ]");
-			}
+			catch (Exception ex) { Logger.Print(LOG_TYPE.ERROR, $"비디오 뷰어 컨트롤 화면 갱신 이벤트 실패 [ {ex.Message} ]"); }
 		}
-		private void OnChangeDepth(Int64 new_idx) {
+		private void OnChangeImageScale(Canvas canvas, double scale_diff) {
 			if (VideoInfo == null) return;
 
+			if (canvas == LeftViewCanvas) {
+				Point canvasCenter = new(LeftViewCanvas.ActualWidth / 2.0, LeftViewCanvas.ActualHeight / 2.0);
 
-			//Int64 next_z_idx = Math.Clamp(new_idx, 0, __img_info.ImgSize.d - 1);
-			//if (__show_z_idx == next_z_idx) return;
-			//__show_z_idx = next_z_idx;
-			//DepthScrollBar.Value = next_z_idx;
-
-			//if (__drag_type == DRAG_TYPE.NONE)
-			//	OnRefreshViewImage();
-			//else
-			//	ViewCanvas_MouseMove(TopViewCanvas, null);
-		}
-		private void OnChangeImageScale(double new_scale) {
-			if (VideoInfo == null) return;
-
-			//__scale_rate = new_scale;
-
-			//Matrix rot = TopViewRotation.Value;
-			//rot.Invert();
-			//Vector colVec = rot.Transform(new Vector(1, 0));
-			//Vector rowVec = rot.Transform(new Vector(0, 1));
-			//colVec.Normalize();
-			//rowVec.Normalize();
-
-			//Point canvasCenter = new(TopViewCanvas.ActualWidth / 2.0, TopViewCanvas.ActualHeight / 2.0);
-
-			//Matrix curMatrix = TopViewTransformGroup.Value;
-			//curMatrix.Invert();
-			//Point centerImage = curMatrix.Transform(canvasCenter);
-			//TopViewScale.ScaleX = TopViewScale.ScaleY = SideViewScale.ScaleX = SideViewScale.ScaleY =  __scale_rate;
-
-			//Matrix newMatrix = TopViewTransformGroup.Value;
-			//Point newPosCanvas = newMatrix.Transform(centerImage);
-			//double x_diff = canvasCenter.X - newPosCanvas.X;
-			//double y_diff = canvasCenter.Y - newPosCanvas.Y;
-
-			//TopViewTranslate.X += x_diff * colVec.X + y_diff * rowVec.X;
-			//TopViewTranslate.Y += x_diff * colVec.Y + y_diff * rowVec.Y;
-			//SideViewTranslate.X = (SideViewCanvas.ActualWidth - __img_info.ImgSize.w * 2 * SideViewScale.ScaleX) / 2.0;
-			//SideViewTranslate.Y = (SideViewCanvas.ActualHeight / 2.0 - __show_z_idx * __scale_rate);
-
-			//OnRefreshViewImage();
-		}
-		private void OnChangeImageTranslate(Canvas canvas, POINT3 cur_pos) {
-			if (canvas == TopViewCanvas) {
-				Matrix curMatrix = TopViewRotation.Value;
+				Matrix curMatrix = LeftViewTransformGroup.Value;
 				curMatrix.Invert();
+				Point centerImage = curMatrix.Transform(canvasCenter);
+				LeftViewScale.ScaleX *= scale_diff;
+				LeftViewScale.ScaleY *= scale_diff;
 
-				Vector colVec = curMatrix.Transform(new Vector(1, 0));
-				Vector rowVec = curMatrix.Transform(new Vector(0, 1));
-				colVec.Normalize();
-				rowVec.Normalize();
-
-				double x_diff = cur_pos.x - __drag_prev_position.x;
-				double y_diff = cur_pos.y - __drag_prev_position.y;
-
-				TopViewTranslate.X += x_diff * colVec.X + y_diff * rowVec.X;
-				TopViewTranslate.Y += x_diff * colVec.Y + y_diff * rowVec.Y;
+				Matrix newMatrix = LeftViewTransformGroup.Value;
+				Point newPosCanvas = newMatrix.Transform(centerImage);
+				LeftViewTranslate.X += canvasCenter.X - newPosCanvas.X;
+				LeftViewTranslate.Y += canvasCenter.Y - newPosCanvas.Y;
 			}
-			else if (canvas == SideViewCanvas) {
-				SideViewTranslate.Y +=  cur_pos.y - __drag_prev_position.y;
+			else if (canvas == RightViewCanvas) {
+				Point canvasCenter = new(RightViewCanvas.ActualWidth / 2.0, RightViewCanvas.ActualHeight / 2.0);
+
+				Matrix curMatrix = RightViewTransformGroup.Value;
+				curMatrix.Invert();
+				Point centerImage = curMatrix.Transform(canvasCenter);
+				RightViewScale.ScaleX *= scale_diff;
+				RightViewScale.ScaleY *= scale_diff;
+
+				Matrix newMatrix = RightViewTransformGroup.Value;
+				Point newPosCanvas = newMatrix.Transform(centerImage);
+				RightViewTranslate.X += canvasCenter.X - newPosCanvas.X;
+				RightViewTranslate.Y += canvasCenter.Y - newPosCanvas.Y;
+			}
+			else return;
+		}
+		private void OnChangeImageTranslate(Canvas canvas, INDEX3 pxl_pos) {
+			if (VideoInfo == null) return;
+
+			if (canvas == LeftViewCanvas) {
+				var from_loc = LeftViewTransformGroup.Transform(new(__left_prev_drag_position.X, __left_prev_drag_position.Y));
+				var to_loc = LeftViewTransformGroup.Transform(new(pxl_pos.X, pxl_pos.Y));
+
+				LeftViewTranslate.X += to_loc.X - from_loc.X;
+				LeftViewTranslate.Y += to_loc.Y - from_loc.Y;
+				RightViewTranslate.X += to_loc.X - from_loc.X;
+				RightViewTranslate.Y += to_loc.Y - from_loc.Y;
+			}
+			else if (canvas == RightViewCanvas) {
+				var from_loc = RightViewTransformGroup.Transform(new(__left_prev_drag_position.X, __left_prev_drag_position.Y));
+				var to_loc = RightViewTransformGroup.Transform(new(pxl_pos.X, pxl_pos.Y));
+
+				LeftViewTranslate.X += to_loc.X - from_loc.X;
+				LeftViewTranslate.Y += to_loc.Y - from_loc.Y;
+				RightViewTranslate.X += to_loc.X - from_loc.X;
+				RightViewTranslate.Y += to_loc.Y - from_loc.Y;
 			}
 			else return;
 
 			OnRefreshViewImage();
 		}
-		private unsafe void OnBrushLabel(Canvas canvas, POINT3 cur_pos) {
+		private unsafe void OnBrushLabel(Canvas canvas, INDEX3 pxl_pos) {
 			if (VideoInfo == null) return;
 
 
