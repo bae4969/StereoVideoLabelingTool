@@ -3,7 +3,10 @@
     "ImageLabelingTool": {
       "commandName": "Project",
       "workingDirectory": "$(SolutionDir)build",
-      "nativeDebugging": false
+      "environmentVariables": {
+        "path": "$(SolutionDir)..\\..\\..\\..\\..\\..\\..\\..\\exlib\\x64\\bin;$(SolutionDir)..\\..\\..\\..\\..\\..\\..\\..\\exlib\\cuda\\bin;"
+      },
+      "nativeDebugging": true
     }
   }
 }

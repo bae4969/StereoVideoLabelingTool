@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.12.35514.174
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StereoVideoLabelingTool", "StereoVideoLabelingTool\StereoVideoLabelingTool.csproj", "{3980DAEE-1B87-4756-BA42-0243F931004D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8673F3DC-5242-4AC8-A514-005775B9F639} = {8673F3DC-5242-4AC8-A514-005775B9F639}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3E30D321-6FF4-4429-A7D1-786D5EE217A2}"
 	ProjectSection(SolutionItems) = preProject
@@ -13,18 +16,37 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StereoVideoLabelingToolCore", "StereoVideoLabelingToolCore\StereoVideoLabelingToolCore.vcxproj", "{8673F3DC-5242-4AC8-A514-005775B9F639}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{3980DAEE-1B87-4756-BA42-0243F931004D}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{3980DAEE-1B87-4756-BA42-0243F931004D}.Debug|x64.Build.0 = Debug|Any CPU
+		{3980DAEE-1B87-4756-BA42-0243F931004D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3980DAEE-1B87-4756-BA42-0243F931004D}.Debug|x86.Build.0 = Debug|Any CPU
 		{3980DAEE-1B87-4756-BA42-0243F931004D}.Release|x64.ActiveCfg = Release|Any CPU
 		{3980DAEE-1B87-4756-BA42-0243F931004D}.Release|x64.Build.0 = Release|Any CPU
+		{3980DAEE-1B87-4756-BA42-0243F931004D}.Release|x86.ActiveCfg = Release|Any CPU
+		{3980DAEE-1B87-4756-BA42-0243F931004D}.Release|x86.Build.0 = Release|Any CPU
+		{8673F3DC-5242-4AC8-A514-005775B9F639}.Debug|x64.ActiveCfg = Debug|x64
+		{8673F3DC-5242-4AC8-A514-005775B9F639}.Debug|x64.Build.0 = Debug|x64
+		{8673F3DC-5242-4AC8-A514-005775B9F639}.Debug|x86.ActiveCfg = Debug|Win32
+		{8673F3DC-5242-4AC8-A514-005775B9F639}.Debug|x86.Build.0 = Debug|Win32
+		{8673F3DC-5242-4AC8-A514-005775B9F639}.Release|x64.ActiveCfg = Release|x64
+		{8673F3DC-5242-4AC8-A514-005775B9F639}.Release|x64.Build.0 = Release|x64
+		{8673F3DC-5242-4AC8-A514-005775B9F639}.Release|x86.ActiveCfg = Release|Win32
+		{8673F3DC-5242-4AC8-A514-005775B9F639}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7A5D24AE-66C3-4863-8B49-6CEE0BE26A5F}
 	EndGlobalSection
 EndGlobal
