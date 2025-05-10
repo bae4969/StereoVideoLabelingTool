@@ -74,12 +74,12 @@
     <TargetName>$(ProjectName)_d</TargetName>
     <IncludePath>..\..\..\..\..\..\..\..\exlib\x64\include;..\..\..\..\..\..\..\..\exlib\x64\include\opencv4100;..\..\..\..\..\..\..\..\exlib\x64\include\eigen3;..\..\..\..\..\..\..\..\exlib\x64\include\flann;..\..\..\..\..\..\..\..\exlib\x64\include\ITK-5.3;..\..\..\..\..\..\..\..\exlib\x64\include\pcl-1.13;..\..\..\..\..\..\..\..\exlib\x64\include\vtk-9.3;..\..\..\..\..\..\..\..\exlib\x64\include\tinyxml2;..\..\..\..\..\..\..\..\exlib\x64\include\zmq434;..\..\..\..\..\..\..\..\exlib\cuda\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\..\..\..\..\exlib\x64\lib;..\..\..\..\..\..\..\..\exlib\cuda\lib;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)build</OutDir>
+    <OutDir>$(SolutionDir)build\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>..\..\..\..\..\..\..\..\exlib\x64\include;..\..\..\..\..\..\..\..\exlib\x64\include\opencv4100;..\..\..\..\..\..\..\..\exlib\x64\include\eigen3;..\..\..\..\..\..\..\..\exlib\x64\include\flann;..\..\..\..\..\..\..\..\exlib\x64\include\pcl-1.13;..\..\..\..\..\..\..\..\exlib\x64\include\vtk-9.3;..\..\..\..\..\..\..\..\exlib\x64\include\tinyxml2;..\..\..\..\..\..\..\..\exlib\x64\include\zmq434;..\..\..\..\..\..\..\..\exlib\cuda\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\..\..\..\..\exlib\x64\lib;..\..\..\..\..\..\..\..\exlib\cuda\lib;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)build</OutDir>
+    <OutDir>$(SolutionDir)build\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

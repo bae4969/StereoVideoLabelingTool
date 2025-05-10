@@ -257,6 +257,8 @@ namespace StereoVideoLabelingTool
 			DevTestLoad.Visibility = Visibility.Visible;
 			DevTestSave.Visibility = Visibility.Visible;
 #endif
+
+			Core.Initalize();
 		}
 		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 

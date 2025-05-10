@@ -3,5 +3,8 @@
 #include <filesystem>
 
 namespace Bae {
-	bool SaveVolume(std::filesystem::path filename, Vol8TypePtr vol);
+	template<typename VolType>
+	bool SaveVolume(std::filesystem::path filename, typename VolType::Pointer vol);
+	template<typename VolType>
+	typename VolType::Pointer LoadVolume(std::filesystem::path filename);
 }
