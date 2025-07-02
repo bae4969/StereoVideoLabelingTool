@@ -37,7 +37,7 @@ namespace StereoVideoLabelingTool
 
 		#endregion
 
-		private readonly StereoVideoInfoType __stereo_video_info = new();
+		private readonly StereoVideoInfoType _stereo_video_info = new();
 		private string _current_filename = string.Empty;
 
 		////////////////////////////////////////////////////////////////
@@ -50,16 +50,16 @@ namespace StereoVideoLabelingTool
 
 		private bool OnCreateVideoInfo(Tuple<string, string, string, string, string> new_info) {
 			try {
-				if (__stereo_video_info.IsLoaded() == true)
+				if (_stereo_video_info.IsLoaded() == true)
 					throw new Exception($"Already Loaded");
 
 				// TODO
 
-				//if (__stereo_video_info.Create(filename) == false)
+				//if (_stereo_video_info.Create(filename) == false)
 				//	throw new Exception($"Load TV_LIB");
 
 				//if (string.IsNullOrWhiteSpace(filename) == false &&
-				//	__stereo_video_info.Load(filename) == false)
+				//	_stereo_video_info.Load(filename) == false)
 				//	throw new Exception($"Load Image");
 
 				return true;
@@ -73,10 +73,10 @@ namespace StereoVideoLabelingTool
 		}
 		private bool OnLoadVideoInfo(string filename) {
 			try {
-				if (__stereo_video_info.IsLoaded() == true)
+				if (_stereo_video_info.IsLoaded() == true)
 					throw new Exception($"Already Loaded");
 
-				if (__stereo_video_info.Load(filename) == false)
+				if (_stereo_video_info.Load(filename) == false)
 					throw new Exception($"Load TV_LIB");
 
 				return true;
@@ -94,8 +94,8 @@ namespace StereoVideoLabelingTool
 					GlobalSettingManager.GetSetting("Path", "LabelDir", out string label_dir); ;
 					filename = $"{label_dir}\\{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.xml";
 				}
-				
-				if (__stereo_video_info.Save(filename) == false)
+
+				if (_stereo_video_info.Save(filename) == false)
 					throw new Exception($"저장 실패");
 
 				return true;
@@ -106,14 +106,14 @@ namespace StereoVideoLabelingTool
 			}
 		}
 		private void OnUnloadVideoInfo() {
-			__stereo_video_info.Unload();
+			_stereo_video_info.Unload();
 
 			GC.Collect();
 		}
 		private void OnSaveBackupVideoInfo() {
 			try {
 				Directory.CreateDirectory(Path.GetDirectoryName(MyConst.LAST_WORK_BACKUP_PATH));
-				if (__stereo_video_info.Save(MyConst.LAST_WORK_BACKUP_PATH) == false)
+				if (_stereo_video_info.Save(MyConst.LAST_WORK_BACKUP_PATH) == false)
 					throw new Exception($"Fail to Backup");
 			}
 			catch (Exception ex) {
@@ -122,9 +122,9 @@ namespace StereoVideoLabelingTool
 		}
 
 		private void OnInitializeWidgets() {
-			StreoVideoViewer.OnInitialize(__stereo_video_info);
-			RightTopContainer.OnInitialize(__stereo_video_info);
-			RightBotContainer.OnInitialize(__stereo_video_info);
+			StreoVideoViewer.OnInitialize(_stereo_video_info);
+			RightTopContainer.OnInitialize(_stereo_video_info);
+			RightBotContainer.OnInitialize(_stereo_video_info);
 		}
 		private void OnReleaseWidgets() {
 			StreoVideoViewer.OnRelease();
@@ -180,7 +180,7 @@ namespace StereoVideoLabelingTool
 					finally { ShowWaitIndicator(false); }
 					if (is_good == true) return;
 
-					MessageBox.Show("Fail to create parts library", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+					MessageBox.Show("Fail to create model", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				};
 
 				LoadVideoInfoEvent += async (s, e) => {
@@ -201,7 +201,7 @@ namespace StereoVideoLabelingTool
 					finally { ShowWaitIndicator(false); }
 					if (is_good == true) return;
 
-					MessageBox.Show("Fail to load parts library", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+					MessageBox.Show("Fail to load model", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				};
 
 				SaveVideoInfoEvent += async (s, e) => {
@@ -218,7 +218,7 @@ namespace StereoVideoLabelingTool
 					finally { ShowWaitIndicator(false); }
 					if (is_good == true) return;
 
-					MessageBox.Show("Fail to save parts library", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+					MessageBox.Show("Fail to save model", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				};
 
 				UnloadVideoInfoEvent += async (s, e) => {
@@ -235,7 +235,7 @@ namespace StereoVideoLabelingTool
 					finally { ShowWaitIndicator(false); }
 					if (is_good == true) return;
 
-					MessageBox.Show("Fail to unload parts library", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+					MessageBox.Show("Fail to unload model", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				};
 
 				SaveBackupVideoInfoEvent += async (s, e) => {
@@ -253,10 +253,10 @@ namespace StereoVideoLabelingTool
 			}
 		}
 		private void Window_Loaded(object sender, RoutedEventArgs e) {
-#if MY_DEBUG
-			DevTestLoad.Visibility = Visibility.Visible;
-			DevTestSave.Visibility = Visibility.Visible;
-#endif
+			if (Debugger.IsAttached) {
+				DevTestLoad.Visibility = Visibility.Visible;
+				DevTestSave.Visibility = Visibility.Visible;
+			}
 
 			Core.Initalize();
 		}
@@ -274,11 +274,11 @@ namespace StereoVideoLabelingTool
 			UnloadVideoInfoEvent(sender, e);
 		}
 		private void SaveMenuItem_Click(object sender, RoutedEventArgs e) {
-			if (!__stereo_video_info.IsLoaded()) return;
+			if (!_stereo_video_info.IsLoaded()) return;
 			SaveVideoInfoEvent.Invoke(sender, null);
 		}
 		private void SaveAsMenuItem_Click(object sender, RoutedEventArgs e) {
-			if (!__stereo_video_info.IsLoaded()) {
+			if (!_stereo_video_info.IsLoaded()) {
 				MessageBox.Show("로딩된 라벨이 없음", "에러", MessageBoxButton.OK, MessageBoxImage.Error);
 				return;
 			}
@@ -321,7 +321,7 @@ namespace StereoVideoLabelingTool
 		}
 		private void ReloadResourceMenuItem_Click(object sender, RoutedEventArgs e) {
 			// 로딩된 상태이면 저장할 건지 물어보기
-			if (__stereo_video_info.IsLoaded()) {
+			if (_stereo_video_info.IsLoaded()) {
 				var ret = MessageBox.Show(
 					"현재 열린 데이터의 변화값들은 모두 버려지게 됩니다.\n" +
 					"그래도 종료하시겠습니까?",
@@ -350,10 +350,10 @@ namespace StereoVideoLabelingTool
 		}
 
 		private void DevTestLoad_Click(object sender, RoutedEventArgs e) {
-			LoadVideoInfoEvent.Invoke(sender, "./temp/debug/origin/20250406_202319.xml");
+			LoadVideoInfoEvent.Invoke(sender, "./temp/debug/origin/MY_TEST.xml");
 		}
 		private void DevTestSave_Click(object sender, RoutedEventArgs e) {
-			SaveVideoInfoEvent.Invoke(sender, "./temp/debug/delta/20250406_202319.xml");
+			SaveVideoInfoEvent.Invoke(sender, "./temp/debug/delta/MY_TEST.xml");
 		}
 		private void DevTestExec_Click(object sender, RoutedEventArgs e) {
 		}

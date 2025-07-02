@@ -100,13 +100,13 @@ namespace StereoVideoLabelingTool.Classes
 			Build = build;
 		}
 		public VersionType(string version) {
-			string[] parts = version.Split('.');
-			if (parts.Length != 4)
+			string[] ver_strs = version.Split('.');
+			if (ver_strs.Length != 4)
 				throw new ArgumentException("Invalid version format");
-			Major = int.Parse(parts[0]);
-			Minor = int.Parse(parts[1]);
-			Patch = int.Parse(parts[2]);
-			Build = int.Parse(parts[3]);
+			Major = int.Parse(ver_strs[0]);
+			Minor = int.Parse(ver_strs[1]);
+			Patch = int.Parse(ver_strs[2]);
+			Build = int.Parse(ver_strs[3]);
 		}
 		public VersionType Clone() {
 			return new(Major, Minor, Patch, Build);
@@ -207,7 +207,7 @@ namespace StereoVideoLabelingTool.Classes
 
 	public class StereoVideoInfoType : SettingManager
 	{
-		private readonly ReaderWriterLockSlim __info_lock = new();
+		private readonly ReaderWriterLockSlim _info_lock = new();
 		public StereoVideoLabelInfoType StereoVideoLabelInfo = null;
 
 		public VideoCapture LeftVideoCapture = null;
@@ -228,7 +228,7 @@ namespace StereoVideoLabelingTool.Classes
 
 
 		public bool Load(string filename) {
-			__info_lock.EnterWriteLock();
+			_info_lock.EnterWriteLock();
 			try {
 				var (ext_list, prefix) = MyFunc.GetExtensionList(filename);
 				var label_path = $"{prefix}.label.stereo.video.xml";
@@ -274,10 +274,10 @@ namespace StereoVideoLabelingTool.Classes
 				Unload();
 				return false;
 			}
-			finally { __info_lock.ExitWriteLock(); }
+			finally { _info_lock.ExitWriteLock(); }
 		}
 		public bool Save(string filename) {
-			__info_lock.EnterReadLock();
+			_info_lock.EnterReadLock();
 			try {
 				if (StereoVideoLabelInfo == null) return false;
 
@@ -298,7 +298,7 @@ namespace StereoVideoLabelingTool.Classes
 						writer.Write(frame);
 				}
 				using (var writer = new VideoWriter(
-					left_path,
+					right_path,
 					FourCC.H264,
 					RightVideoCapture.Fps,
 					new Size(RightVideoCapture.FrameWidth, RightVideoCapture.FrameHeight)
@@ -327,24 +327,24 @@ namespace StereoVideoLabelingTool.Classes
 				return false;
 			}
 			finally {
-				__info_lock.ExitReadLock();
+				_info_lock.ExitReadLock();
 			}
 		}
 		public void Unload() {
-			__info_lock.EnterWriteLock();
+			_info_lock.EnterWriteLock();
 			try {
 				StereoVideoLabelInfo = null;
 				LeftVideoCapture = null;
 				RightVideoCapture = null;
 			}
-			finally { __info_lock.ExitWriteLock(); }
+			finally { _info_lock.ExitWriteLock(); }
 		}
 		public bool IsLoaded() {
-			__info_lock.EnterReadLock();
+			_info_lock.EnterReadLock();
 			try {
 				return StereoVideoLabelInfo != null;
 			}
-			finally { __info_lock.ExitReadLock(); }
+			finally { _info_lock.ExitReadLock(); }
 		}
 	}
 }
